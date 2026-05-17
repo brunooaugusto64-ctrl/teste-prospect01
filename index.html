@@ -1,0 +1,2205 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ProspectIA — Leads B2B qualificados com IA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --bg-0:#0F0F13;
+  --bg-1:#13131A;
+  --bg-2:#1A1A24;
+  --card:#1E1E2E;
+  --card-2:#23233A;
+  --line:rgba(255,255,255,0.08);
+  --line-strong:rgba(255,255,255,0.14);
+  --fg:#F8FAFC;
+  --fg-dim:#94A3B8;
+  --fg-low:#5b6479;
+  --violet:#7C3AED;
+  --violet-2:#A78BFA;
+  --cyan:#06B6D4;
+  --cyan-2:#67E8F9;
+  --hot:#F97316;
+  --warm:#F59E0B;
+  --cold:#3B82F6;
+  --good:#10B981;
+  --grad: linear-gradient(95deg,#7C3AED 0%, #5B6DFB 45%, #06B6D4 100%);
+  --grad-soft: linear-gradient(135deg,rgba(124,58,237,.18),rgba(6,182,212,.18));
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+html{scroll-behavior:smooth;background:var(--bg-0)}
+body{
+  font-family:'Inter',system-ui,-apple-system,sans-serif;
+  background:var(--bg-0);
+  color:var(--fg);
+  font-weight:400;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+::selection{background:rgba(124,58,237,.45);color:#fff}
+
+/* ambient bg */
+.bg-fx{
+  position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(900px 600px at 12% -10%, rgba(124,58,237,.18), transparent 60%),
+    radial-gradient(800px 500px at 90% 10%, rgba(6,182,212,.14), transparent 60%),
+    radial-gradient(700px 500px at 50% 110%, rgba(124,58,237,.10), transparent 60%),
+    var(--bg-0);
+}
+.grid-fx{
+  position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.35;
+  background-image:
+    linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+  background-size:64px 64px;
+  mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%);
+}
+
+/* (cursor effect removed — using native cursor) */
+
+/* layout */
+.wrap{max-width:1240px;margin:0 auto;padding:0 28px}
+section{position:relative;padding:120px 0}
+@media (max-width:720px){section{padding:80px 0} .wrap{padding:0 20px}}
+
+h1,h2,h3,h4{font-family:'Inter',sans-serif;font-weight:800;letter-spacing:-0.02em;line-height:1.05;margin:0}
+h1{font-size:clamp(40px,7.4vw,96px);font-weight:900;letter-spacing:-0.035em;line-height:1.02}
+h2{font-size:clamp(32px,4.4vw,60px);letter-spacing:-0.025em}
+h3{font-size:clamp(20px,1.6vw,24px)}
+p{margin:0;color:var(--fg-dim)}
+.mono{font-family:'JetBrains Mono',monospace}
+
+.eyebrow{
+  display:inline-flex;align-items:center;gap:10px;
+  padding:8px 14px;border-radius:999px;
+  background:rgba(255,255,255,.03);
+  border:1px solid var(--line);
+  font-size:13px;color:var(--fg-dim);
+  font-weight:500;
+}
+.eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--violet-2);box-shadow:0 0 12px var(--violet)}
+
+.section-head{max-width:780px;margin:0 auto 64px;text-align:center}
+.section-head h2{margin:18px 0 14px}
+.section-head p{font-size:18px;color:var(--fg-dim);max-width:620px;margin:0 auto}
+
+/* buttons */
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:14px 22px;border-radius:12px;
+  font-weight:600;font-size:15px;
+  text-decoration:none;color:#fff;
+  border:1px solid transparent;
+  cursor:none;
+  transition:transform .18s ease, box-shadow .25s ease, background .25s;
+  position:relative;
+  font-family:inherit;
+}
+.btn-primary{
+  background:var(--grad);
+  box-shadow:
+    0 8px 30px rgba(124,58,237,.35),
+    inset 0 1px 0 rgba(255,255,255,.18);
+}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 14px 44px rgba(124,58,237,.55),0 0 0 1px rgba(167,139,250,.4) inset}
+.btn-ghost{
+  background:rgba(255,255,255,.03);
+  border-color:var(--line-strong);
+  color:var(--fg);
+}
+.btn-ghost:hover{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.25)}
+.btn-sm{padding:10px 16px;font-size:14px;border-radius:10px}
+
+/* === NAV === */
+nav.top{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  padding:18px 0;
+  transition:background .3s, backdrop-filter .3s, border-color .3s, padding .3s;
+  border-bottom:1px solid transparent;
+}
+nav.top.scrolled{
+  background:rgba(15,15,19,.72);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  border-bottom-color:var(--line);
+  padding:12px 0;
+}
+.nav-row{display:flex;align-items:center;justify-content:space-between;gap:24px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--fg);font-weight:800;letter-spacing:-0.02em;font-size:19px}
+.brand-mark{
+  width:30px;height:30px;border-radius:9px;
+  background:var(--grad);
+  position:relative;
+  box-shadow:0 4px 18px rgba(124,58,237,.45);
+}
+.brand-mark::before,.brand-mark::after{
+  content:"";position:absolute;background:#0F0F13;border-radius:2px;
+}
+.brand-mark::before{inset:7px 14px 14px 7px}
+.brand-mark::after{inset:14px 7px 7px 14px}
+.brand .badge{
+  font-size:10px;font-weight:700;padding:3px 7px;border-radius:5px;
+  background:rgba(124,58,237,.18);color:var(--violet-2);
+  border:1px solid rgba(124,58,237,.4);
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  margin-left:4px;
+}
+.nav-links{display:flex;gap:32px;align-items:center}
+.nav-links a{color:var(--fg-dim);text-decoration:none;font-size:14.5px;font-weight:500;transition:color .2s}
+.nav-links a:hover{color:var(--fg)}
+.nav-cta{display:flex;gap:10px;align-items:center}
+.nav-cta .sign-in{color:var(--fg-dim);font-size:14.5px;text-decoration:none;font-weight:500}
+.nav-cta .sign-in:hover{color:var(--fg)}
+@media (max-width:880px){
+  .nav-links{display:none}
+  .nav-cta .sign-in{display:none}
+}
+
+/* === HERO === */
+.hero{padding-top:170px;padding-bottom:80px;position:relative}
+.hero-inner{display:grid;gap:40px;max-width:1240px;margin:0 auto}
+.hero-top{
+  display:grid;grid-template-columns:1.05fr 1fr;gap:60px;align-items:center;
+}
+@media (max-width:980px){
+  .hero-top{grid-template-columns:1fr;gap:40px;text-align:center}
+  .hero-cta{justify-content:center}
+  .hero .eyebrow{justify-self:center}
+  .hero-text .hero-sub{margin-left:auto;margin-right:auto}
+}
+.hero-text{display:flex;flex-direction:column;gap:24px;align-items:flex-start}
+@media (max-width:980px){.hero-text{align-items:center}}
+.hero h1{margin:0}
+.hero h1 .grad{
+  background:linear-gradient(95deg,#A78BFA 0%, #67E8F9 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.hero-sub{font-size:clamp(17px,1.4vw,20px);color:var(--fg-dim);max-width:540px}
+.hero-cta{display:flex;gap:14px;flex-wrap:wrap}
+
+/* world map — binary grid (azul, perspectiva, dígitos animados) */
+.world-wrap{
+  position:relative;aspect-ratio:1.45/1;width:100%;max-width:600px;justify-self:end;
+  border-radius:18px;overflow:hidden;
+  background:
+    radial-gradient(ellipse at 50% 110%, rgba(56,120,255,.55), transparent 60%),
+    radial-gradient(ellipse at 75% 0%, rgba(124,58,237,.30), transparent 55%),
+    linear-gradient(180deg, #0a1a4a 0%, #0d2670 45%, #1233a8 100%);
+  border:1px solid rgba(140,180,255,.22);
+  box-shadow:
+    0 30px 80px rgba(20,40,140,.5),
+    inset 0 0 80px rgba(0,0,0,.5),
+    0 0 0 1px rgba(124,180,255,.08);
+}
+@media (max-width:980px){.world-wrap{justify-self:center;max-width:560px}}
+
+/* perspective grid */
+.world-wrap::before{
+  content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(180,210,255,.22) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(180,210,255,.22) 1px, transparent 1px);
+  background-size:7.5% 11%;
+  transform:perspective(620px) rotateX(36deg) scale(1.5) translateY(8%);
+  transform-origin:center 80%;
+  mask-image:linear-gradient(180deg, transparent 0%, #000 22%, #000 82%, transparent 100%);
+  -webkit-mask-image:linear-gradient(180deg, transparent 0%, #000 22%, #000 82%, transparent 100%);
+  opacity:.9;
+}
+
+/* moving light rays */
+.world-wrap::after{
+  content:"";position:absolute;inset:-10%;z-index:2;pointer-events:none;
+  background:
+    linear-gradient(100deg, transparent 30%, rgba(180,220,255,.22) 50%, transparent 70%),
+    linear-gradient(80deg, transparent 35%, rgba(255,255,255,.14) 52%, transparent 68%);
+  mix-blend-mode:screen;
+  animation:rayShift 9s ease-in-out infinite alternate;
+}
+@keyframes rayShift{
+  0%{transform:translate(-6%,-3%)}
+  100%{transform:translate(6%,3%)}
+}
+
+.world-svg{position:absolute;inset:0;width:100%;height:100%;z-index:3}
+.world-svg text{
+  font-family:'JetBrains Mono', monospace;
+  font-size:7px;
+  font-weight:500;
+  fill:rgba(225,240,255,.78);
+  filter:drop-shadow(0 0 1.5px rgba(150,200,255,.55));
+  user-select:none;
+}
+.world-svg text.bright{fill:#ffffff;filter:drop-shadow(0 0 3px rgba(190,225,255,.95))}
+.world-svg .city{fill:#ffffff;filter:drop-shadow(0 0 8px rgba(255,255,255,.9)) drop-shadow(0 0 16px rgba(120,180,255,.75))}
+.world-svg .ring{fill:none;stroke:rgba(200,225,255,.7);stroke-width:1.4}
+.world-svg .arc{fill:none;stroke:url(#arcGrad);stroke-width:1.3;stroke-linecap:round;stroke-dasharray:5 8;opacity:.9;filter:drop-shadow(0 0 4px rgba(180,210,255,.7))}
+@keyframes arcDash{to{stroke-dashoffset:-130}}
+.world-svg .arc{animation:arcDash 6s linear infinite}
+@keyframes cityPulse{0%{r:3.2}50%{r:5.5}100%{r:3.2}}
+.world-svg .city{animation:cityPulse 2.2s ease-in-out infinite}
+@keyframes pulseRing{
+  0%{r:4;opacity:.85}
+  100%{r:26;opacity:0}
+}
+.world-svg .ring{animation:pulseRing 2.2s ease-out infinite}
+
+/* horizon glow */
+.horizon{
+  position:absolute;left:0;right:0;bottom:18%;height:1px;z-index:2;
+  background:linear-gradient(90deg,transparent,rgba(180,220,255,.95),transparent);
+  box-shadow:0 0 18px rgba(180,220,255,.7);
+  pointer-events:none;
+}
+
+.world-tag{
+  position:absolute;z-index:4;
+  font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;
+  color:#eaf3ff;background:rgba(8,20,60,.85);
+  border:1px solid rgba(140,180,255,.45);
+  padding:5px 9px;border-radius:7px;
+  backdrop-filter:blur(6px);
+  white-space:nowrap;
+  box-shadow:0 4px 14px rgba(0,10,40,.6), 0 0 12px rgba(120,180,255,.25);
+  pointer-events:none;
+  opacity:0;transform:translateY(4px);
+  transition:opacity .5s, transform .5s;
+}
+.world-tag.in{opacity:1;transform:none}
+.world-tag::before{content:"●";color:#aacbff;margin-right:6px;font-size:8px;vertical-align:middle;filter:drop-shadow(0 0 4px #aacbff)}
+@media (max-width:560px){.world-tag{font-size:10px;padding:4px 7px}}
+.spark{
+  display:inline-block;background:linear-gradient(120deg,#A78BFA,#67E8F9);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  font-weight:700;
+}
+
+/* hero demo */
+.demo-card{
+  margin:24px auto 0;max-width:1080px;width:100%;
+  background:linear-gradient(180deg,rgba(30,30,46,.85),rgba(19,19,26,.85));
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:14px;
+  box-shadow:
+    0 30px 80px rgba(0,0,0,.5),
+    0 0 0 1px rgba(124,58,237,.06),
+    inset 0 1px 0 rgba(255,255,255,.05);
+  position:relative;
+  overflow:hidden;
+}
+.demo-card::before{
+  content:"";position:absolute;inset:-1px;border-radius:19px;padding:1px;
+  background:linear-gradient(135deg,rgba(124,58,237,.5),transparent 30%,transparent 70%,rgba(6,182,212,.5));
+  -webkit-mask:linear-gradient(#000,#000) content-box,linear-gradient(#000,#000);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+  pointer-events:none;
+}
+.demo-bar{display:flex;align-items:center;gap:10px;padding:6px 4px 14px}
+.demo-bar .traffic{display:flex;gap:6px}
+.demo-bar .traffic span{width:11px;height:11px;border-radius:50%;background:#2a2a3a}
+.demo-bar .url{
+  flex:1;background:rgba(255,255,255,.03);border:1px solid var(--line);
+  border-radius:8px;padding:6px 12px;font-family:'JetBrains Mono',monospace;
+  font-size:12px;color:var(--fg-low);text-align:center;
+}
+.prompt-row{
+  display:flex;align-items:center;gap:10px;
+  padding:14px 16px;border-radius:12px;
+  background:#0F0F18;border:1px solid var(--line-strong);
+  margin-bottom:14px;
+}
+.prompt-row .ico{
+  width:26px;height:26px;border-radius:7px;background:var(--grad);
+  display:grid;place-items:center;font-size:13px;flex-shrink:0;
+  box-shadow:0 0 14px rgba(124,58,237,.45);
+}
+.prompt-row .field{
+  flex:1;font-family:'JetBrains Mono',monospace;font-size:14.5px;
+  color:var(--fg);min-height:22px;
+  text-align:left;
+}
+.prompt-row .field .caret{
+  display:inline-block;width:2px;height:18px;background:var(--cyan-2);
+  vertical-align:-3px;animation:blink 1s steps(2) infinite;margin-left:2px;
+}
+@keyframes blink{50%{opacity:0}}
+.prompt-go{
+  background:var(--grad);border:none;color:#fff;font-weight:600;
+  padding:9px 16px;border-radius:8px;font-size:13px;cursor:none;
+  box-shadow:0 6px 16px rgba(124,58,237,.4);
+  font-family:inherit;
+}
+
+.demo-status{
+  display:flex;align-items:center;gap:10px;padding:8px 14px;
+  border-radius:8px;background:rgba(124,58,237,.08);
+  border:1px solid rgba(124,58,237,.22);
+  font-size:13px;color:var(--violet-2);font-weight:500;
+  margin-bottom:12px;opacity:0;transition:opacity .3s;
+}
+.demo-status.show{opacity:1}
+.demo-status .pulse{
+  width:8px;height:8px;border-radius:50%;background:var(--violet-2);
+  animation:pulse 1.4s ease-out infinite;
+}
+@keyframes pulse{
+  0%{box-shadow:0 0 0 0 rgba(167,139,250,.6)}
+  100%{box-shadow:0 0 0 14px rgba(167,139,250,0)}
+}
+
+.leads-list{display:grid;gap:8px;text-align:left}
+.lead{
+  display:grid;grid-template-columns:auto 1fr auto auto;gap:14px;align-items:center;
+  padding:12px 14px;border-radius:10px;
+  background:rgba(255,255,255,.025);
+  border:1px solid var(--line);
+  font-size:13.5px;
+  opacity:0;transform:translateY(10px);
+  transition:opacity .5s, transform .5s;
+}
+.lead.in{opacity:1;transform:none}
+.lead .avatar{
+  width:32px;height:32px;border-radius:8px;
+  background:linear-gradient(135deg,#2a2a3a,#1a1a24);
+  border:1px solid var(--line);
+  display:grid;place-items:center;font-size:12px;font-weight:700;color:var(--fg-dim);
+}
+.lead .meta{display:flex;flex-direction:column;gap:2px;min-width:0}
+.lead .name{color:var(--fg);font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lead .sub{color:var(--fg-low);font-size:12px;font-family:'JetBrains Mono',monospace}
+.score{
+  font-family:'JetBrains Mono',monospace;
+  font-size:13px;color:var(--fg);font-weight:600;
+}
+.tag{
+  font-size:11px;padding:4px 9px;border-radius:6px;font-weight:600;
+  display:inline-flex;align-items:center;gap:5px;
+  font-family:'JetBrains Mono',monospace;letter-spacing:.02em;
+}
+.tag.hot{background:rgba(249,115,22,.14);color:#FB923C;border:1px solid rgba(249,115,22,.3)}
+.tag.warm{background:rgba(245,158,11,.14);color:#FBBF24;border:1px solid rgba(245,158,11,.3)}
+.tag.cold{background:rgba(59,130,246,.14);color:#60A5FA;border:1px solid rgba(59,130,246,.3)}
+@media (max-width:560px){
+  .lead{grid-template-columns:auto 1fr auto}
+  .lead .score{display:none}
+}
+
+/* === SOCIAL PROOF === */
+.proof{padding:60px 0}
+.proof-head{text-align:center;color:var(--fg-low);font-size:13px;letter-spacing:.18em;text-transform:uppercase;margin-bottom:28px;font-weight:500}
+.proof-row{display:flex;flex-wrap:wrap;justify-content:center;gap:48px 56px;align-items:center;opacity:.7}
+.proof-row .logo{
+  font-family:'Inter',sans-serif;font-weight:700;font-size:18px;
+  color:var(--fg-low);
+  letter-spacing:-0.02em;
+  display:flex;align-items:center;gap:8px;
+  transition:color .3s, filter .3s;
+  filter:grayscale(1) brightness(1.1);
+  cursor:none;
+}
+.proof-row .logo:hover{color:var(--fg);filter:none}
+.proof-row .logo span.dot{width:8px;height:8px;border-radius:50%;background:currentColor}
+.proof-row .logo span.box{width:10px;height:10px;border:2px solid currentColor;border-radius:2px}
+.proof-row .logo span.tri{
+  width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:10px solid currentColor;
+}
+
+/* === HOW IT WORKS === */
+.steps{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:24px;position:relative;
+}
+@media (max-width:860px){.steps{grid-template-columns:1fr}}
+.steps::before{
+  content:"";position:absolute;top:78px;left:14%;right:14%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(124,58,237,.5),rgba(6,182,212,.5),transparent);
+  z-index:0;
+}
+@media (max-width:860px){.steps::before{display:none}}
+.step{
+  position:relative;z-index:1;
+  background:linear-gradient(180deg,var(--card),rgba(30,30,46,.4));
+  border:1px solid var(--line);
+  border-radius:18px;padding:32px 28px;
+  display:flex;flex-direction:column;gap:14px;
+  transition:transform .3s, border-color .3s, box-shadow .3s;
+}
+.step:hover{transform:translateY(-4px);border-color:rgba(124,58,237,.35);box-shadow:0 20px 50px rgba(124,58,237,.12)}
+.step-num{
+  width:56px;height:56px;border-radius:14px;
+  background:rgba(124,58,237,.12);
+  border:1px solid rgba(124,58,237,.3);
+  display:grid;place-items:center;
+  font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;
+  color:var(--violet-2);
+  position:relative;
+  box-shadow:inset 0 0 24px rgba(124,58,237,.18);
+}
+.step h3{color:var(--fg);font-weight:700}
+.step p{font-size:15px}
+.step .example{
+  margin-top:auto;font-family:'JetBrains Mono',monospace;font-size:12.5px;
+  color:var(--cyan-2);
+  padding:10px 12px;border-radius:8px;
+  background:rgba(6,182,212,.06);
+  border:1px solid rgba(6,182,212,.2);
+}
+
+/* === DASHBOARD DEMO === */
+.dashboard{
+  background:linear-gradient(180deg,#13131A,#0F0F18);
+  border:1px solid var(--line);
+  border-radius:20px;
+  overflow:hidden;
+  box-shadow:0 40px 100px rgba(0,0,0,.5);
+  position:relative;
+}
+.dash-bar{
+  display:flex;align-items:center;gap:14px;padding:14px 18px;
+  border-bottom:1px solid var(--line);
+  background:rgba(255,255,255,.02);
+}
+.dash-bar .traffic{display:flex;gap:6px}
+.dash-bar .traffic span{width:11px;height:11px;border-radius:50%;background:#2a2a3a}
+.dash-bar h4{font-weight:600;font-size:14px;margin:0}
+.dash-bar .path{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--fg-low);margin-left:auto}
+.dash-body{display:grid;grid-template-columns:220px 1fr;min-height:480px}
+@media (max-width:860px){.dash-body{grid-template-columns:1fr;min-height:0}}
+.dash-side{
+  border-right:1px solid var(--line);padding:20px 14px;background:rgba(0,0,0,.18);
+}
+@media (max-width:860px){.dash-side{display:none}}
+.side-section{font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--fg-low);margin:18px 8px 8px;font-weight:600}
+.side-section:first-child{margin-top:0}
+.side-item{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 10px;border-radius:8px;
+  font-size:13.5px;color:var(--fg-dim);
+  cursor:none;transition:background .2s, color .2s;
+}
+.side-item:hover{background:rgba(255,255,255,.04);color:var(--fg)}
+.side-item.active{background:rgba(124,58,237,.14);color:var(--fg);border:1px solid rgba(124,58,237,.3)}
+.side-item .ico{
+  width:18px;height:18px;border-radius:5px;background:var(--card-2);display:grid;place-items:center;font-size:10px;
+}
+.side-item.active .ico{background:var(--grad);color:#fff}
+.dash-main{padding:22px;min-width:0;overflow-x:auto}
+@media (max-width:560px){.dash-main{padding:16px}}
+.dash-prompt{
+  display:flex;align-items:center;gap:10px;padding:12px 14px;
+  background:#0F0F18;border:1px solid var(--line-strong);border-radius:10px;
+  margin-bottom:18px;
+}
+.dash-prompt .icn{width:22px;height:22px;border-radius:6px;background:var(--grad);display:grid;place-items:center;font-size:11px}
+.dash-prompt .txt{font-family:'JetBrains Mono',monospace;font-size:13.5px;color:var(--fg);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media (max-width:560px){.dash-prompt .txt{font-size:12px}}
+.dash-prompt .typed-caret{display:inline-block;width:2px;height:14px;background:var(--cyan-2);vertical-align:-2px;animation:blink 1s steps(2) infinite;margin-left:2px}
+.dash-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+@media (max-width:680px){.dash-stats{grid-template-columns:repeat(2,1fr)}}
+.stat{
+  padding:14px;border-radius:10px;background:rgba(255,255,255,.025);border:1px solid var(--line);
+}
+.stat .lbl{font-size:11.5px;color:var(--fg-low);text-transform:uppercase;letter-spacing:.1em;font-weight:600;margin-bottom:6px}
+.stat .val{font-size:22px;font-weight:700;color:var(--fg);font-family:'JetBrains Mono',monospace}
+.stat .val .acc{color:var(--cyan-2);font-size:13px;font-weight:500;margin-left:4px}
+
+.dash-table{
+  border:1px solid var(--line);border-radius:12px;overflow:hidden;
+  background:rgba(0,0,0,.2);
+}
+.dash-row{
+  display:grid;grid-template-columns:1.4fr 1fr 1.1fr 1fr .8fr;
+  align-items:center;gap:14px;padding:12px 16px;
+  border-bottom:1px solid var(--line);
+  font-size:13px;
+}
+.dash-row:last-child{border-bottom:none}
+.dash-row.head{background:rgba(255,255,255,.02);font-size:11px;color:var(--fg-low);text-transform:uppercase;letter-spacing:.1em;font-weight:600}
+.dash-row .biz{display:flex;align-items:center;gap:10px}
+.dash-row .biz .av{
+  width:30px;height:30px;border-radius:7px;background:var(--card-2);
+  display:grid;place-items:center;font-size:11px;font-weight:700;color:var(--violet-2);
+  border:1px solid var(--line);flex-shrink:0;
+}
+.dash-row .biz .info{display:flex;flex-direction:column;min-width:0}
+.dash-row .biz .info b{color:var(--fg);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dash-row .biz .info span{color:var(--fg-low);font-size:11.5px;font-family:'JetBrains Mono',monospace}
+.dash-row .ph{font-family:'JetBrains Mono',monospace;color:var(--fg-dim);font-size:12.5px;white-space:nowrap}
+.dash-row .web{color:var(--cyan-2);font-family:'JetBrains Mono',monospace;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar{
+  position:relative;height:6px;border-radius:3px;background:rgba(255,255,255,.06);overflow:hidden;
+  display:flex;align-items:center;
+}
+.bar .fill{height:100%;border-radius:3px;background:var(--grad);box-shadow:0 0 12px rgba(124,58,237,.4)}
+.bar + .num{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--fg-dim);margin-left:8px}
+.score-cell{display:flex;align-items:center;min-width:0}
+@media (max-width:860px){
+  .dash-row{grid-template-columns:1.4fr 1fr .8fr;gap:10px;padding:12px 14px}
+  .dash-row .ph,.dash-row .web{display:none}
+  .dash-row.head{grid-template-columns:1.4fr 1fr .8fr}
+}
+@media (max-width:560px){
+  .dash-row{grid-template-columns:1.6fr .8fr;gap:8px;padding:10px 12px;font-size:12px}
+  .dash-row .score-cell{display:none}
+  .dash-row.head{grid-template-columns:1.6fr .8fr}
+  .dash-stats{grid-template-columns:repeat(2,1fr);gap:8px}
+  .stat{padding:10px}
+  .stat .val{font-size:18px}
+  .dash-bar .path{display:none}
+  .dash-bar h4{font-size:13px}
+}
+
+/* === FEATURES === */
+.features{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+@media (max-width:920px){.features{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:560px){.features{grid-template-columns:1fr}}
+.feat{
+  padding:30px 26px;border-radius:18px;
+  background:linear-gradient(180deg,var(--card),rgba(30,30,46,.5));
+  border:1px solid var(--line);
+  display:flex;flex-direction:column;gap:14px;
+  transition:transform .3s, border-color .3s, box-shadow .3s;
+  position:relative;overflow:hidden;
+}
+.feat::after{
+  content:"";position:absolute;inset:0;border-radius:18px;pointer-events:none;
+  background:radial-gradient(400px 220px at var(--mx,50%) var(--my,0%), rgba(124,58,237,.10), transparent 60%);
+  opacity:0;transition:opacity .35s;
+}
+.feat:hover{transform:translateY(-3px);border-color:var(--line-strong)}
+.feat:hover::after{opacity:1}
+.feat-ico{
+  width:46px;height:46px;border-radius:12px;
+  background:linear-gradient(135deg,rgba(124,58,237,.18),rgba(6,182,212,.14));
+  border:1px solid rgba(124,58,237,.28);
+  display:grid;place-items:center;
+  position:relative;
+  box-shadow:0 0 24px rgba(124,58,237,.15) inset;
+}
+.feat-ico svg{width:22px;height:22px;color:var(--violet-2)}
+.feat h3{font-weight:700;font-size:18px}
+.feat p{font-size:14.5px;line-height:1.6}
+
+/* === COMPARISON === */
+.compare{
+  border:1px solid var(--line);border-radius:20px;overflow:hidden;
+  background:linear-gradient(180deg,rgba(30,30,46,.5),rgba(19,19,26,.7));
+}
+.cmp-row{
+  display:grid;grid-template-columns:1.3fr 1fr 1fr;align-items:center;
+  border-bottom:1px solid var(--line);
+  font-size:15px;
+}
+.cmp-row:last-child{border-bottom:none}
+.cmp-row > div{padding:18px 22px}
+.cmp-row.head{font-size:13px;text-transform:uppercase;letter-spacing:.12em;color:var(--fg-low);font-weight:600;background:rgba(0,0,0,.18)}
+.cmp-row.head .col-us{
+  background:linear-gradient(180deg,rgba(124,58,237,.16),rgba(6,182,212,.12));
+  color:var(--fg);
+  position:relative;
+}
+.cmp-row.head .col-us::before{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(124,58,237,.2),transparent);
+  pointer-events:none;
+}
+.cmp-row .lbl{color:var(--fg);font-weight:500}
+.cmp-row .col-them{color:var(--fg-low)}
+.cmp-row .col-us{color:var(--fg);background:rgba(124,58,237,.04);border-left:1px solid var(--line);border-right:1px solid rgba(124,58,237,.18)}
+.cmp-row .col-us:last-child{border-right:none}
+.check{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:22px;height:22px;border-radius:50%;
+  background:rgba(16,185,129,.14);
+  color:#34D399;margin-right:10px;
+  box-shadow:0 0 14px rgba(16,185,129,.25);
+  vertical-align:-5px;
+}
+.x-mark{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:22px;height:22px;border-radius:50%;
+  background:rgba(255,255,255,.05);
+  color:var(--fg-low);margin-right:10px;vertical-align:-5px;
+}
+@media (max-width:720px){
+  .cmp-row{grid-template-columns:1fr;gap:0}
+  .cmp-row > div{padding:14px 18px;border-bottom:1px solid var(--line)}
+  .cmp-row > div:last-child{border-bottom:none}
+  .cmp-row.head{display:none}
+  .cmp-row .col-them::before{content:"Manual — ";color:var(--fg-low);font-weight:600;text-transform:uppercase;font-size:11px;letter-spacing:.1em}
+  .cmp-row .col-us::before{content:"ProspectIA — ";color:var(--violet-2);font-weight:700;text-transform:uppercase;font-size:11px;letter-spacing:.1em}
+}
+
+/* === PRICING === */
+.bill-toggle{
+  display:inline-flex;background:rgba(255,255,255,.04);border:1px solid var(--line);
+  border-radius:999px;padding:5px;margin:0 auto 40px;
+}
+.bill-toggle button{
+  background:transparent;border:none;color:var(--fg-dim);font-weight:600;font-size:14px;
+  padding:9px 20px;border-radius:999px;cursor:none;font-family:inherit;
+  transition:background .25s, color .25s;
+  display:inline-flex;align-items:center;gap:8px;
+}
+.bill-toggle button.on{background:var(--grad);color:#fff;box-shadow:0 4px 14px rgba(124,58,237,.35)}
+.bill-toggle .save{
+  font-size:10.5px;background:rgba(16,185,129,.18);color:#34D399;
+  padding:2px 7px;border-radius:5px;font-weight:700;letter-spacing:.04em;
+}
+.plans{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;align-items:stretch;max-width:840px;margin:0 auto}
+@media (max-width:780px){.plans{grid-template-columns:1fr;max-width:480px;margin:0 auto}}
+.plan{
+  display:flex;flex-direction:column;gap:18px;
+  padding:32px 28px;border-radius:20px;
+  background:linear-gradient(180deg,var(--card),rgba(30,30,46,.5));
+  border:1px solid var(--line);
+  position:relative;
+  transition:transform .3s, border-color .3s;
+}
+.plan:hover{transform:translateY(-3px)}
+.plan.popular{
+  border-color:rgba(124,58,237,.5);
+  box-shadow:0 0 0 1px rgba(124,58,237,.2), 0 30px 80px rgba(124,58,237,.22), 0 0 60px rgba(124,58,237,.18);
+  background:linear-gradient(180deg,rgba(30,30,46,1),rgba(40,30,80,.4));
+}
+.plan.popular::before{
+  content:"Mais popular";position:absolute;top:-12px;left:50%;transform:translateX(-50%);
+  background:var(--grad);color:#fff;font-size:11.5px;font-weight:700;
+  padding:5px 14px;border-radius:999px;letter-spacing:.04em;
+  box-shadow:0 6px 18px rgba(124,58,237,.4);
+}
+.plan h3{font-weight:700;font-size:20px}
+.plan .desc{color:var(--fg-dim);font-size:14px;min-height:42px}
+.price{display:flex;align-items:baseline;gap:6px;font-weight:800;letter-spacing:-0.02em}
+.price .cur{font-size:18px;color:var(--fg-dim);font-weight:600}
+.price .amt{font-size:48px;color:var(--fg)}
+.price .per{font-size:14px;color:var(--fg-low);font-weight:500}
+.plan ul{list-style:none;padding:0;margin:8px 0 0;display:grid;gap:10px}
+.plan li{display:flex;gap:10px;align-items:flex-start;font-size:14.5px;color:var(--fg-dim)}
+.plan li svg{flex-shrink:0;margin-top:3px;color:#34D399}
+.plan .btn{width:100%;justify-content:center;margin-top:auto}
+
+/* === TESTIMONIALS === */
+.scroller{
+  position:relative;overflow:hidden;
+  mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);
+}
+.track{display:flex;gap:20px;width:max-content;animation:scroll 40s linear infinite}
+.scroller:hover .track{animation-play-state:paused}
+@keyframes scroll{to{transform:translateX(calc(-50% - 10px))}}
+.testi{
+  width:380px;flex-shrink:0;
+  padding:26px;border-radius:16px;
+  background:linear-gradient(180deg,var(--card),rgba(30,30,46,.5));
+  border:1px solid var(--line);
+  display:flex;flex-direction:column;gap:18px;
+}
+.testi p{color:var(--fg);font-size:15.5px;line-height:1.6}
+.testi .who{display:flex;align-items:center;gap:12px}
+.testi .av{
+  width:40px;height:40px;border-radius:50%;
+  display:grid;place-items:center;font-weight:700;font-size:14px;color:#fff;flex-shrink:0;
+}
+.testi .meta{display:flex;flex-direction:column}
+.testi .meta b{font-weight:600;font-size:14.5px}
+.testi .meta span{font-size:12.5px;color:var(--fg-low)}
+.testi .stars{display:flex;gap:3px;color:#FBBF24;font-size:14px}
+
+/* === FAQ === */
+.faq-list{max-width:780px;margin:0 auto;display:grid;gap:12px}
+.faq{
+  border:1px solid var(--line);border-radius:14px;
+  background:rgba(30,30,46,.4);
+  overflow:hidden;
+  transition:border-color .3s, background .3s;
+}
+.faq[open]{border-color:rgba(124,58,237,.3);background:rgba(30,30,46,.7)}
+.faq summary{
+  list-style:none;
+  display:flex;align-items:center;justify-content:space-between;gap:20px;
+  padding:20px 24px;cursor:none;
+  font-weight:600;font-size:16px;color:var(--fg);
+}
+.faq summary::-webkit-details-marker{display:none}
+.faq .plus{
+  width:24px;height:24px;flex-shrink:0;position:relative;
+  transition:transform .3s;
+}
+.faq .plus::before,.faq .plus::after{
+  content:"";position:absolute;background:var(--violet-2);border-radius:1px;
+}
+.faq .plus::before{left:2px;right:2px;top:11px;height:2px}
+.faq .plus::after{top:2px;bottom:2px;left:11px;width:2px;transition:transform .3s}
+.faq[open] .plus::after{transform:scaleY(0)}
+.faq[open] .plus{transform:rotate(180deg)}
+.faq-body{padding:0 24px 22px;color:var(--fg-dim);font-size:15px;line-height:1.65;animation:fade .35s ease}
+@keyframes fade{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+
+/* === CTA FINAL === */
+.cta-final{
+  border-radius:24px;
+  padding:80px 40px;
+  text-align:center;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(167,139,250,.3), transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(103,232,249,.25), transparent 50%),
+    linear-gradient(135deg,#7C3AED 0%, #5B6DFB 50%, #06B6D4 100%);
+  position:relative;overflow:hidden;
+  box-shadow:0 40px 100px rgba(124,58,237,.3);
+}
+.cta-final::before{
+  content:"";position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.06) 1px, transparent 1px);
+  background-size:48px 48px;
+  mask-image:radial-gradient(ellipse at center,#000 30%,transparent 75%);
+}
+.cta-final > *{position:relative;z-index:1}
+.cta-final h2{color:#fff;font-size:clamp(36px,5vw,68px)}
+.cta-final p{color:rgba(255,255,255,.85);font-size:18px;margin-top:16px;max-width:540px;margin-left:auto;margin-right:auto}
+.email-form{
+  display:flex;gap:10px;max-width:480px;margin:36px auto 0;
+  background:rgba(0,0,0,.32);
+  padding:6px;border-radius:14px;
+  border:1px solid rgba(255,255,255,.18);
+  backdrop-filter:blur(10px);
+}
+.email-form input{
+  flex:1;background:transparent;border:none;outline:none;color:#fff;
+  font-family:inherit;font-size:15px;padding:10px 14px;min-width:0;
+}
+.email-form input::placeholder{color:rgba(255,255,255,.55)}
+.email-form button{
+  background:#0F0F13;color:#fff;border:none;font-weight:600;font-size:14.5px;
+  padding:12px 22px;border-radius:10px;cursor:none;font-family:inherit;
+  white-space:nowrap;transition:background .2s;
+}
+.email-form button:hover{background:#1a1a24}
+.cta-final small{display:block;margin-top:18px;color:rgba(255,255,255,.7);font-size:13px}
+
+/* === FOOTER === */
+footer{padding:80px 0 40px;border-top:1px solid var(--line);background:#0B0B10}
+.foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:40px;margin-bottom:60px}
+@media (max-width:780px){.foot-grid{grid-template-columns:1fr 1fr;gap:36px}}
+@media (max-width:480px){.foot-grid{grid-template-columns:1fr}}
+.foot-brand p{font-size:14.5px;color:var(--fg-dim);max-width:300px;margin-top:14px}
+.foot-col h5{font-size:12px;text-transform:uppercase;letter-spacing:.14em;color:var(--fg-low);font-weight:600;margin:0 0 16px}
+.foot-col ul{list-style:none;padding:0;margin:0;display:grid;gap:10px}
+.foot-col a{color:var(--fg-dim);text-decoration:none;font-size:14.5px;transition:color .2s}
+.foot-col a:hover{color:var(--fg)}
+.foot-bottom{display:flex;justify-content:space-between;align-items:center;gap:24px;padding-top:28px;border-top:1px solid var(--line);font-size:13px;color:var(--fg-low);flex-wrap:wrap}
+.socials{display:flex;gap:10px}
+.socials a{
+  width:34px;height:34px;border-radius:8px;display:grid;place-items:center;
+  background:rgba(255,255,255,.04);border:1px solid var(--line);color:var(--fg-dim);
+  transition:color .2s, border-color .2s, background .2s;
+}
+.socials a:hover{color:var(--fg);border-color:var(--line-strong);background:rgba(255,255,255,.07)}
+.socials svg{width:16px;height:16px}
+
+/* reveal */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .8s ease, transform .8s ease}
+.reveal.in{opacity:1;transform:none}
+.reveal.d1{transition-delay:.08s}
+.reveal.d2{transition-delay:.16s}
+.reveal.d3{transition-delay:.24s}
+.reveal.d4{transition-delay:.32s}
+
+/* utility */
+.center{text-align:center}
+.flex-center{display:flex;justify-content:center}
+
+/* === OVERVIEW DASHBOARD (replaces Buscas screen) === */
+.overview{
+  background:#0B0B10;
+  border:1px solid var(--line);
+  border-radius:16px;
+  overflow:hidden;
+  box-shadow:0 40px 100px rgba(0,0,0,.55);
+  font-family:'Inter',sans-serif;
+  position:relative;
+}
+.ov-status{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:9px 18px;border-bottom:1px solid var(--line);
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  color:var(--fg-low);letter-spacing:.08em;
+  background:rgba(0,0,0,.35);
+}
+.ov-status-l{display:flex;align-items:center;gap:8px}
+.ov-pulse{width:7px;height:7px;border-radius:50%;background:#37C58A;box-shadow:0 0 8px #37C58A;animation:ovPulse 1.6s ease-out infinite}
+@keyframes ovPulse{0%,100%{opacity:1}50%{opacity:.45}}
+.ov-top{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:24px;
+  padding:18px 22px 4px;
+}
+.ov-crumb-trail{font-size:10.5px;color:var(--fg-low);letter-spacing:.16em;margin-bottom:6px}
+.ov-title{margin:0;font-size:20px;font-weight:600;color:var(--fg);display:flex;align-items:baseline;gap:14px}
+.ov-sub{font-size:11px;color:var(--fg-low);font-weight:500;letter-spacing:.06em}
+.ov-search{
+  display:flex;align-items:center;gap:8px;
+  padding:9px 14px;border-radius:10px;
+  background:rgba(255,255,255,.025);border:1px solid var(--line);
+  font-size:13px;color:var(--fg-low);min-width:260px;
+}
+.ov-search-ico{font-size:13px}
+.ov-search-ph{flex:1}
+.ov-kbd{font-size:11px;padding:2px 6px;border-radius:5px;border:1px solid var(--line);background:rgba(255,255,255,.04)}
+@media (max-width:680px){.ov-search{display:none}}
+
+.ov-hello{
+  display:flex;align-items:flex-end;justify-content:space-between;gap:18px;
+  padding:14px 22px 22px;flex-wrap:wrap;
+}
+.ov-greet{margin:0;font-size:26px;font-weight:600;color:var(--fg);letter-spacing:-.01em}
+.ov-greet-sub{font-size:11.5px;color:var(--fg-low);margin-top:6px;letter-spacing:.04em}
+.ov-greet-cta{display:flex;gap:10px}
+.ov-btn{
+  border:1px solid var(--line);background:rgba(255,255,255,.03);
+  color:var(--fg);padding:9px 14px;border-radius:9px;
+  font-size:13px;font-weight:500;cursor:none;font-family:inherit;
+  display:inline-flex;align-items:center;gap:6px;
+  transition:background .2s,border-color .2s;
+}
+.ov-btn:hover{background:rgba(255,255,255,.07)}
+.ov-btn-amber{background:var(--grad);color:#fff;border-color:transparent;font-weight:600;box-shadow:0 6px 18px rgba(124,58,237,.35), inset 0 1px 0 rgba(255,255,255,.18)}
+.ov-btn-amber:hover{filter:brightness(1.08);box-shadow:0 10px 26px rgba(124,58,237,.5), inset 0 1px 0 rgba(255,255,255,.18)}
+
+.ov-stats{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:14px;
+  padding:0 22px 18px;
+}
+@media (max-width:780px){.ov-stats{grid-template-columns:repeat(2,1fr)}}
+.ov-stat{
+  background:rgba(255,255,255,.025);border:1px solid var(--line);
+  border-radius:12px;padding:16px 18px;
+  display:flex;flex-direction:column;gap:6px;min-height:120px;
+}
+.ov-stat-lbl{font-size:10.5px;color:var(--fg-low);letter-spacing:.14em}
+.ov-stat-val{font-size:32px;font-weight:700;color:var(--fg);font-family:'Inter',sans-serif;line-height:1}
+.ov-stat-val.amber{background:linear-gradient(95deg,#A78BFA 0%, #67E8F9 100%);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 22px rgba(124,58,237,.35)}
+.ov-stat-val.muted{color:var(--fg-low)}
+.ov-stat-foot{font-size:11px;color:var(--fg-low);margin-top:auto;letter-spacing:.04em}
+.ov-progress{height:3px;border-radius:2px;background:rgba(255,255,255,.06);overflow:hidden;margin-top:6px}
+.ov-progress-fill{height:100%;background:var(--grad);box-shadow:0 0 10px rgba(124,58,237,.55)}
+
+.ov-split{
+  display:grid;grid-template-columns:1.25fr 1fr;gap:14px;
+  padding:0 22px 18px;
+}
+@media (max-width:880px){.ov-split{grid-template-columns:1fr}}
+.ov-panel{
+  background:rgba(255,255,255,.02);border:1px solid var(--line);
+  border-radius:12px;padding:18px 20px;
+}
+.ov-panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:18px}
+.ov-panel-head h4{margin:0;font-size:14.5px;font-weight:600;color:var(--fg)}
+.ov-panel-sub{font-size:10.5px;color:var(--fg-low);margin-top:3px;letter-spacing:.04em}
+.ov-panel-meta{font-size:10.5px;color:var(--fg-low);letter-spacing:.06em;display:inline-flex;align-items:center;gap:6px}
+
+.ov-quality{display:grid;grid-template-columns:auto 1fr;gap:24px;align-items:center}
+@media (max-width:560px){.ov-quality{grid-template-columns:1fr;justify-items:center;gap:14px}}
+.ov-donut{position:relative;width:120px;height:120px;flex-shrink:0}
+.ov-donut-svg{width:100%;height:100%;filter:drop-shadow(0 0 14px rgba(245,180,0,.35))}
+.ov-donut-c{
+  position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+}
+.ov-donut-pct{font-size:24px;font-weight:700;color:var(--fg)}
+.ov-donut-lbl{font-size:9px;color:var(--fg-low);letter-spacing:.16em;margin-top:2px}
+
+.ov-bars{display:flex;flex-direction:column;gap:12px;width:100%}
+.ov-qrow{display:flex;flex-direction:column;gap:6px}
+.ov-qhead{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--fg)}
+.ov-qval{margin-left:auto;color:var(--fg-low);font-size:11.5px}
+.ov-qbar{height:2px;border-radius:2px;background:rgba(255,255,255,.06);overflow:hidden}
+.ov-qfill{height:100%;border-radius:2px;box-shadow:0 0 8px currentColor}
+.ov-dot{display:inline-block;width:7px;height:7px;border-radius:50%}
+.ov-dot-amber{background:#A78BFA;box-shadow:0 0 8px #A78BFA}
+.ov-dot-cyan{background:#67E8F9;box-shadow:0 0 8px #67E8F9}
+.ov-dot-green{background:#34D399;box-shadow:0 0 8px #34D399}
+
+.ov-cities{display:flex;flex-direction:column;gap:14px}
+.ov-city-head{display:flex;justify-content:space-between;font-size:13px;color:var(--fg);margin-bottom:6px}
+
+.ov-map-panel{margin:0 22px 22px}
+.ov-map{
+  position:relative;height:340px;border-radius:10px;overflow:hidden;
+  background:#0A0A10;
+  border:1px solid rgba(255,255,255,.04);
+}
+.ov-map-svg{width:100%;height:100%;display:block}
+#ovMapDots circle{fill:rgba(120,130,160,.22)}
+.ov-map-ping{animation:ovPing 2.2s ease-out infinite;transform-origin:center}
+.ov-map-ping-2{animation-delay:.6s}
+@keyframes ovPing{0%{opacity:.9;transform:scale(.6)}100%{opacity:0;transform:scale(2.2)}}
+.ov-map-corner{position:absolute;width:18px;height:18px;border:1px solid rgba(167,139,250,.55)}
+.ov-map-corner.tl{top:14px;left:14px;border-right:none;border-bottom:none}
+.ov-map-corner.tr{top:14px;right:14px;border-left:none;border-bottom:none}
+.ov-map-corner.bl{bottom:14px;left:14px;border-right:none;border-top:none}
+.ov-map-corner.br{bottom:14px;right:14px;border-left:none;border-top:none}
+.ov-map-badge{position:absolute;top:18px;left:32px;font-size:10px;color:#A78BFA;letter-spacing:.14em;display:inline-flex;align-items:center;gap:6px}
+.ov-map-foot-l{position:absolute;bottom:20px;left:32px;font-size:10px;color:var(--fg-low);letter-spacing:.12em;display:inline-flex;align-items:center;gap:6px}
+.ov-map-foot-r{position:absolute;bottom:20px;right:32px;font-size:10px;color:var(--fg-low);letter-spacing:.12em}
+</style>
+
+<!-- Supabase via CDN (não precisa Vite) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = "https://rnrrnrtcytoduciqdksk.supabase.co";
+  const SUPABASE_ANON_KEY = "sb_publishable_OoEVrKJu6WE5ek7AqhnJSg_8AQC328P";
+  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  
+  // Se já está logado E NÃO está vindo de logout, vai direto pra dash
+  (async () => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('logout') === '1') return; // veio do logout, fica na landing
+    
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (session) {
+      window.location.href = "/app.html";
+    }
+  })();
+</script>
+
+</head>
+<body>
+
+<div class="bg-fx"></div>
+<div class="grid-fx"></div>
+
+<!-- NAV -->
+<nav class="top" id="nav">
+  <div class="wrap nav-row">
+    <a href="#" class="brand">
+      <span class="brand-mark"></span>
+      <span>ProspectIA</span>
+      <span class="badge">Beta</span>
+    </a>
+    <div class="nav-links">
+      <a href="#features">Funcionalidades</a>
+      <a href="#pricing">Preços</a>
+      <a href="#testimonials">reviews</a>
+      <a href="#faq">
+</a>
+    </div>
+    <div class="nav-cta">
+      <a href="javascript:void(0)" onclick="openAuth('login')" class="sign-in">Entrar</a>
+      <a href="javascript:void(0)" onclick="openAuth('signup')" class="btn btn-primary btn-sm">Começar grátis →</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" style="font-size: 16px">
+  <div class="wrap">
+    <div class="hero-inner">
+      <div class="hero-top">
+        <div class="hero-text">
+          <span class="eyebrow reveal"><span class="dot"></span>✦ Powered by AI · Google Maps · GPT-4</span>
+          <h1 class="reveal d1" style="font-family: &quot;Crimson Text&quot;; font-weight: 400; font-size: 67px">Uma IA que encontra empresas reais antes dos seus concorrentes.</h1>
+          <p class="hero-sub reveal d2">Digite o que quer, receba leads com telefone, site e classificação de qualidade — em minutos, não em semanas.</p>
+          <div class="hero-cta reveal d3">
+            <a href="javascript:void(0)" onclick="openAuth('signup')" class="btn btn-primary">Começar gratuitamente</a>
+            <a href="#demo" class="btn btn-ghost">▶  Ver demonstração</a>
+          </div>
+        </div>
+        <div class="world-wrap reveal d2" id="worldWrap">
+          <div class="horizon"></div>
+          <svg class="world-svg" viewBox="0 0 640 440" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <defs>
+              <linearGradient id="arcGrad" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#7CB6FF" stop-opacity="0"/>
+                <stop offset="50%" stop-color="#E0F0FF" stop-opacity="1"/>
+                <stop offset="100%" stop-color="#7CB6FF" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <g id="mapDigits"></g>
+            <g id="mapArcs"></g>
+            <g id="mapCities"></g>
+          </svg>
+          <div class="world-tag" id="tag0" style="top:30%;left:48%">Lisboa · 8 leads 🔥</div>
+          <div class="world-tag" id="tag1" style="top:64%;left:30%">São Paulo · 12 🔥</div>
+          <div class="world-tag" id="tag2" style="top:26%;left:42%">Madrid · 6 🔥</div>
+        </div>
+      </div>
+
+      <div class="demo-card reveal d4">
+        <div class="demo-bar">
+          <div class="traffic"><span></span><span></span><span></span></div>
+          <div class="url">prospectia.IA · demo ao vivo</div>
+        </div>
+        <div class="prompt-row">
+          <div class="ico">✦</div>
+          <div class="field"><span id="promptText"></span><span class="caret"></span></div>
+          <button class="prompt-go" id="promptGo">Gerar</button>
+        </div>
+        <div class="demo-status" id="demoStatus"><span class="pulse"></span><span id="statusText">Buscando no Google Maps…</span></div>
+        <div class="leads-list" id="leadsList"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SOCIAL PROOF -->
+<section class="proof">
+  <div class="wrap">
+    <div class="proof-head">Usado por freelancers e agências em 12 países</div>
+    <div class="proof-row">
+      <div class="logo"><span class="dot"></span> MapStack</div>
+      <div class="logo"><span class="box"></span> OpenStudio</div>
+      <div class="logo"><span class="tri"></span> Notora</div>
+      <div class="logo">⌬ Flowforge</div>
+      <div class="logo">◇ Apicraft</div>
+      <div class="logo">○ Lumen</div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow reveal"><span class="dot"></span>Como funciona</span>
+      <h2 class="reveal d1" style="font-family: &quot;Crimson Text&quot;">Encontre empresas em minutos</h2>
+      <p class="reveal d2" style="letter-spacing: 0px; width: 630px">Enquanto outras pessoas ainda montam listas manualmente, a Prospect.IA encontra empresas em tempo real para você.</p>
+    </div>
+    <div class="steps">
+      <div class="step reveal">
+        <div class="step-num">01</div>
+        <h3>Digite o que quer</h3>
+        <p>Descreva o nicho, a cidade e a quantidade. Em linguagem natural, como se estivesse falando com um analista.</p>
+        <div class="example">› quero 10 clínicas em Lisboa</div>
+      </div>
+      <div class="step reveal d1">
+        <div class="step-num">02</div>
+        <h3>IA busca e valida</h3>
+        <p>A engine cruza Google Maps, valida os sites, extrai contatos e atribui um score de qualidade a cada lead encontrado.</p>
+        <div class="example">› map + site_check </div>
+      </div>
+      <div class="step reveal d2">
+        <div class="step-num">03</div>
+        <h3>Receba leads qualificados</h3>
+        <p>Tabela pronta com telefone, site, score e classificação   · Quente · Morno ·  Frio.
+Exporte e venda.</p>
+        <div class="example">› export.csv  ·  send.crm</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DASHBOARD DEMO -->
+<section id="demo">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow reveal"><span class="dot"></span>Demonstração</span>
+      <h2 class="reveal d1" style="font-family: &quot;Crimson Text&quot;">O que você vê é o que você recebe</h2>
+      <p class="reveal d2">Tudo pronto para você entrar em contato. </p>
+    </div>
+
+    <div class="overview reveal d2">
+      <!-- Status bar -->
+      <div class="ov-status">
+        <div class="ov-status-l"><span class="ov-pulse"></span><span>SISTEMA ONLINE</span></div>
+        <div class="ov-status-r mono" id="ovClock">19:08:28</div>
+      </div>
+      <!-- Top: breadcrumb + search -->
+      <div class="ov-top">
+        <div class="ov-crumb">
+          <div class="ov-crumb-trail mono">WORKSPACE / DASHBOARD</div>
+          <h3 class="ov-title">Overview <span class="ov-sub mono">Telemetria do workspace</span></h3>
+        </div>
+        <div class="ov-search">
+          <span class="ov-search-ico">⌕</span>
+          <span class="ov-search-ph">Pesquisar ou comando…</span>
+          <span class="ov-kbd mono">⌘K</span>
+        </div>
+      </div>
+
+      <!-- Hello row -->
+      <div class="ov-hello">
+        <div>
+          <h2 class="ov-greet">Olá, João</h2>
+          <div class="ov-greet-sub mono">5 leads no total · 5 este mês</div>
+        </div>
+        <div class="ov-greet-cta">
+          <button class="ov-btn ov-btn-ghost">↧ Exportar</button>
+          <button class="ov-btn ov-btn-amber">✦ Nova extração</button>
+        </div>
+      </div>
+
+      <!-- Stats grid -->
+      <div class="ov-stats">
+        <div class="ov-stat">
+          <div class="ov-stat-lbl mono">LEADS TOTAIS</div>
+          <div class="ov-stat-val amber">67</div>
+          <div class="ov-stat-foot mono">no banco</div>
+        </div>
+        <div class="ov-stat">
+          <div class="ov-stat-lbl mono">SCORE MÉDIO</div>
+          <div class="ov-stat-val muted">7.8</div>
+          <div class="ov-stat-foot mono">aguardando dados</div>
+        </div>
+        <div class="ov-stat">
+          <div class="ov-stat-lbl mono">PLANO stard</div>
+          <div class="ov-stat-val">67</div>
+          <div class="ov-stat-foot mono">/ 500 leads · 30 dias</div>
+          <div class="ov-progress"><div class="ov-progress-fill" style="width:10%"></div></div>
+        </div>
+        <div class="ov-stat">
+          <div class="ov-stat-lbl mono">CIDADES COBERTAS</div>
+          <div class="ov-stat-val">1</div>
+          <div class="ov-stat-foot mono">região</div>
+        </div>
+      </div>
+
+      <!-- Quality + Top cities -->
+      <div class="ov-split">
+        <div class="ov-panel">
+          <div class="ov-panel-head">
+            <div>
+              <h4>Qualidade dos leads</h4>
+              <div class="ov-panel-sub mono">% com contacto válido (telefone ou website)</div>
+            </div>
+            <div class="ov-panel-meta mono">1 cidade</div>
+          </div>
+          <div class="ov-quality">
+            <div class="ov-donut">
+              <svg viewBox="0 0 120 120" class="ov-donut-svg" aria-hidden="true">
+                <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="10"/>
+                <defs><linearGradient id="ovDonutGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#A78BFA"/><stop offset="100%" stop-color="#67E8F9"/></linearGradient></defs>
+                <circle cx="60" cy="60" r="50" fill="none" stroke="url(#ovDonutGrad)" stroke-width="10" stroke-linecap="round" stroke-dasharray="314 314" transform="rotate(-90 60 60)" class="ov-donut-arc"/>
+              </svg>
+              <div class="ov-donut-c">
+                <div class="ov-donut-pct">100%</div>
+                <div class="ov-donut-lbl mono">QUALIDADE</div>
+              </div>
+            </div>
+            <div class="ov-bars">
+              <div class="ov-qrow">
+                <div class="ov-qhead"><span class="ov-dot ov-dot-amber"></span><span>Com telefone</span><span class="ov-qval mono">5 / 5</span></div>
+                <div class="ov-qbar"><div class="ov-qfill" style="background:#A78BFA;width:100%"></div></div>
+              </div>
+              <div class="ov-qrow">
+                <div class="ov-qhead"><span class="ov-dot ov-dot-cyan"></span><span>Com website</span><span class="ov-qval mono">5 / 5</span></div>
+                <div class="ov-qbar"><div class="ov-qfill" style="background:#67E8F9;width:100%"></div></div>
+              </div>
+              <div class="ov-qrow">
+                <div class="ov-qhead"><span class="ov-dot ov-dot-green"></span><span>email</span><span class="ov-qval mono">5 / 5</span></div>
+                <div class="ov-qbar"><div class="ov-qfill" style="background:#34D399;width:100%"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ov-panel">
+          <div class="ov-panel-head">
+            <div>
+              <h4>Top cidades</h4>
+              <div class="ov-panel-sub mono">Onde tu mais geras leads</div>
+            </div>
+            <div class="ov-panel-meta mono">1 cidade</div>
+          </div>
+          <div class="ov-cities">
+            <div class="ov-city">
+              <div class="ov-city-head"><span>Belo Horizonte</span><span class="mono">5</span></div>
+              <div class="ov-qbar"><div class="ov-qfill" style="background:linear-gradient(90deg,#A78BFA,#67E8F9);width:100%"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Map -->
+      <div class="ov-panel ov-map-panel">
+        <div class="ov-panel-head">
+          <div>
+            <h4>Mapa Global</h4>
+            <div class="ov-panel-sub mono">Origem dos leads · vista em tempo real</div>
+          </div>
+          <div class="ov-panel-meta mono"><span class="ov-dot ov-dot-amber"></span> ACTIVE NODES</div>
+        </div>
+        <div class="ov-map">
+          <div class="ov-map-corner tl"></div>
+          <div class="ov-map-corner tr"></div>
+          <div class="ov-map-corner bl"></div>
+          <div class="ov-map-corner br"></div>
+          <div class="ov-map-badge mono"><span class="ov-dot ov-dot-amber"></span>ALTA DENSIDADE</div>
+          <div class="ov-map-foot-l mono"><span class="ov-dot ov-dot-amber"></span>LEAD ACTIVO</div>
+          <div class="ov-map-foot-r mono">38.7° N · 9.1° W</div>
+          <svg viewBox="0 0 1000 460" class="ov-map-svg" aria-hidden="true">
+            <g id="ovMapDots"></g>
+            <g>
+              <circle cx="382" cy="296" r="3.5" fill="#A78BFA" filter="url(#ovGlow)"/>
+              <circle cx="382" cy="296" r="9" fill="none" stroke="#A78BFA" stroke-opacity=".55" class="ov-map-ping"/>
+              <circle cx="382" cy="296" r="18" fill="none" stroke="#67E8F9" stroke-opacity=".35" class="ov-map-ping ov-map-ping-2"/>
+            </g>
+            <defs>
+              <filter id="ovGlow" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="3" result="b"/>
+                <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+            </defs>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow reveal"><span class="dot"></span>Funcionalidades</span>
+      <h2 class="reveal d1" style="font-family: &quot;Crimson Text&quot;">Um segundo cérebro para sua prospecção.</h2>
+      <p class="reveal d2">Não é mais um scraper. É um analista de prospecção que trabalha 24/7 — e custa menos que um almoço.</p>
+    </div>
+    <div class="features">
+      <div class="feat reveal">
+        <div class="feat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke-linejoin="round"/></svg></div>
+        <h3>Busca automática no Google Maps</h3>
+        <p>Cobertura global. Filtros por categoria, raio, cidade ou bairro. Sem CAPTCHA, sem proxies, sem dor de cabeça.</p>
+      </div>
+      <div class="feat reveal d1">
+        <div class="feat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 16h.01M16 16h.01"/></svg></div>
+        <h3>Validação de sites com IA</h3>
+        <p>Detecta sites inativos, em construção ou abandonados. Só entra na sua lista quem tem operação ativa.</p>
+      </div>
+      <div class="feat reveal d2">
+        <div class="feat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg></div>
+        <h3>Classificação quente · morno · frio</h3>
+        <p>Cada lead vem com a temperatura de oportunidade. Você prioriza os e não perde tempo com os .</p>
+      </div>
+      <div class="feat reveal">
+        <div class="feat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 20h18M6 20V10M11 20V6M16 20v-8M21 20V4"/></svg></div>
+        <h3>Score de 0 a 10</h3>
+        <p>Algoritmo proprietário que cruza qualidade do site, presença digital, faixa de receita estimada e fit comercial.</p>
+      </div>
+      <div class="feat reveal d1">
+        <div class="feat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg></div>
+        <h3>Dica de abordagem personalizada</h3>
+        <p>Para cada lead, a IA sugere o gancho de primeira mensagem — baseado no site, redes e perfil do negócio.</p>
+      </div>
+      <div class="feat reveal d2">
+        <div class="feat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 010 18M12 3a14 14 0 000 18"/></svg></div>
+        <h3>Qualquer cidade do mundo</h3>
+        <p>Português, inglês, espanhol — não importa o idioma. Se está no Maps, está acessível ao seu prompt.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPARE -->
+<section id="compare">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow reveal"><span class="dot"></span>Antes & depois</span>
+      <h2 class="reveal d1" style="font-family: &quot;Crimson Text&quot;">Manual vs ProspectIA</h2>
+      <p class="reveal d2">A mesma tarefa, dois mundos diferentes. Veja o que muda quando a IA assume a parte chata.</p>
+    </div>
+    <div class="compare reveal d1">
+      <div class="cmp-row head">
+        <div>Critério</div>
+        <div>Prospecção Manual</div>
+        <div class="col-us">ProspectIA</div>
+      </div>
+      <div class="cmp-row">
+        <div class="lbl">Tempo por 50 leads</div>
+        <div class="col-them"><span class="x-mark">×</span>8 a 12 horas</div>
+        <div class="col-us"><span class="check">✓</span><b>2 minutos</b></div>
+      </div>
+      <div class="cmp-row">
+        <div class="lbl">Qualidade dos leads</div>
+        <div class="col-them"><span class="x-mark">×</span>Inconsistente, depende do dia</div>
+        <div class="col-us"><span class="check">✓</span>Score validado por IA</div>
+      </div>
+      <div class="cmp-row">
+        <div class="lbl">Escala</div>
+        <div class="col-them"><span class="x-mark">×</span>Limitada pela sua jornada</div>
+        <div class="col-us"><span class="check">✓</span>Buscas paralelas, ilimitadas</div>
+      </div>
+      <div class="cmp-row">
+        <div class="lbl">Custo por lead</div>
+        <div class="col-them"><span class="x-mark">×</span>R$ 8 a R$ 25</div>
+        <div class="col-us"><span class="check">✓</span>A partir de R$ 1,32</div>
+      </div>
+      <div class="cmp-row">
+        <div class="lbl">Dica de abordagem</div>
+        <div class="col-them"><span class="x-mark">×</span>Você pesquisa um por um</div>
+        <div class="col-us"><span class="check">✓</span>Gerada automaticamente</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow reveal"><span class="dot"></span>Preços</span>
+      <h2 class="reveal d1" style="font-family: &quot;Crimson Text&quot;; font-size: 50px; font-weight: 300">Você não precisa de mais propostas enviadas. Precisa chegar antes.</h2>
+      <p class="reveal d2">Comece grátis. Sem burocracia. Sem depender de plataforma.</p>
+    </div>
+    <div class="flex-center"><div class="bill-toggle reveal" id="bill">
+      <button class="on" data-mode="m">Mensal</button>
+      <button data-mode="y">Anual <span class="save">−20%</span></button>
+    </div></div>
+    <div class="plans">
+<div class="plan popular reveal d1">
+        <h3>Starter</h3>
+        <p class="desc">Pra freelancer quem esta iniciando</p>
+        <div class="price"><span class="cur">R$</span><span class="amt" data-m="167" data-y="133">167</span><span class="per">/mês</span></div>
+        <ul>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> <b>250 leads/mês</b></li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Buscas ilimitadas</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Dica de abordagem por lead</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> <b>Modelo de proposta e contrato</b></li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Suporte prioritário</li>
+        </ul>
+        <a href="javascript:void(0)" onclick="openAuth('signup')" class="btn btn-primary">Assinar Pro</a>
+      </div>
+      <div class="plan reveal d1">
+        <h3>Growth</h3>
+        <p class="desc">Pra quem e ja tem resultados </p>
+        <div class="price"><span class="cur">R$</span><span class="amt" data-m="397" data-y="318">397</span><span class="per">/mês</span></div>
+        <ul>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> <b>250 leads/mês</b></li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> <b>Treinamento exclusivo</b></li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Filtros avançados</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Prioridade na fila</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Templates de proposta comercial</li>
+        </ul>
+        <a href="https://wa.me/5531999999999" target="_blank" class="btn btn-ghost">Falar com vendas</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section id="testimonials">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow reveal"><span class="dot"></span>Quem usa</span>
+      <h2 class="reveal d1" style="font-family: &quot;Crimson Text&quot;; height: 12px">Freelancer que prospecta sério.
+
+</h2>
+    </div>
+  </div>
+  <div class="scroller reveal">
+    <div class="track" id="track"></div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow reveal"><span class="dot"></span>Dúvidas</span>
+      <h2 class="reveal d1">Perguntas frequentes</h2>
+    </div>
+    <div class="faq-list">
+      <details class="faq reveal"><summary>Como funciona, na prática?<span class="plus"></span></summary>
+        <div class="faq-body">Você escreve um prompt em português, tipo "quero 30 dentistas em Belo Horizonte com site ativo". A engine consulta o Google Maps, cruza com validação de site, atribui um score de 0 a 10 a cada lead e classifica como 🔥 quente, 🌡️ morno ou ❄️ frio. Você recebe a tabela em minutos.</div>
+      </details>
+      <details class="faq reveal"><summary>Posso cancelar quando quiser?<span class="plus"></span></summary>
+        <div class="faq-body">Sim. Não há fidelidade, multa ou letra miúda. Cancelamento direto no painel, sem precisar falar com ninguém. O acesso continua até o fim do ciclo já pago.</div>
+      </details>
+      <details class="faq reveal"><summary>Funciona para qualquer nicho?<span class="plus"></span></summary>
+        <div class="faq-body">Sim, desde que o negócio tenha presença no Google Maps — o que cobre 99% dos B2B locais e regionais. Clínicas, escritórios, restaurantes, comércio, serviços, indústrias com endereço físico.</div>
+      </details>
+      <details class="faq reveal"><summary>Quanto tempo leva uma busca?<span class="plus"></span></summary>
+        <div class="faq-body">De 30 segundos a 3 minutos, dependendo da quantidade de leads pedida e da validação de sites. Buscas de até 50 leads geralmente saem em menos de 90 segundos.</div>
+      </details>
+      <details class="faq reveal"><summary>Os dados são precisos?<span class="plus"></span></summary>
+        <div class="faq-body">Os dados vêm direto do Google Maps, então a precisão depende do que está cadastrado lá. Sobre isso, a engine valida cada site, descarta os inativos e atribui score baseado em sinais de operação. Em média, 92% dos contatos são utilizáveis em primeira tentativa.</div>
+      </details>
+      <details class="faq reveal"><summary>Tem suporte humano?<span class="plus"></span></summary>
+        <div class="faq-body">Tem. No plano Free, suporte por email com resposta em até 48h. No Pro, chat com resposta em horas. No Agência, gerente dedicado e canal direto no WhatsApp.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- CTA FINAL -->
+<section id="cta">
+  <div class="wrap">
+    <div class="cta-final reveal">
+      <h2>Comece a prospectar com IA agora</h2>
+      <p>Teste grátis por 7 dias. Sem cartão de crédito. Sem onboarding chato.</p>
+      <form class="email-form" onsubmit="event.preventDefault(); document.getElementById('authEmail').value = this.querySelector('input').value; openAuth('signup');">
+        <input type="email" placeholder="voce@empresa.com" required />
+        <button type="submit">Começar agora</button>
+      </form>
+      <small>+ 1.200 freelancers já testaram. Junte-se a eles.</small>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <a href="#" class="brand">
+          <span class="brand-mark"></span>
+          <span>ProspectIA</span>
+        </a>
+        <p>Leads B2B qualificados, gerados com IA. Pra freelancer e agência que querem crescer sem virar planilha.</p>
+      </div>
+      <div class="foot-col">
+        <h5>Produto</h5>
+        <ul>
+          <li><a href="#features">Funcionalidades</a></li>
+          <li><a href="#pricing">Preços</a></li>
+          <li><a href="#demo">Demo</a></li>
+          <li><a href="#">API & Integrações</a></li>
+          <li><a href="#">Changelog</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h5>Empresa</h5>
+        <ul>
+          <li><a href="#">Sobre</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#testimonials">Cases</a></li>
+          <li><a href="#">Carreiras</a></li>
+          <li><a href="#">Imprensa</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h5>Legal</h5>
+        <ul>
+          <li><a href="#">Termos de uso</a></li>
+          <li><a href="#">Privacidade</a></li>
+          <li><a href="#">Cookies</a></li>
+          <li><a href="#">LGPD</a></li>
+          <li><a href="#">Status</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <div>© 2026 ProspectIA — Todos os direitos reservados.</div>
+      <div class="socials">
+        <a href="#" aria-label="X"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+        <a href="#" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5C4.98 4.881 3.87 6 2.5 6S0 4.881 0 3.5C0 2.12 1.12 1 2.5 1S4.98 2.12 4.98 3.5zM.22 8h4.56v14H.22V8zm7.32 0h4.37v1.92h.06c.61-1.15 2.1-2.36 4.32-2.36 4.62 0 5.47 3.04 5.47 7v7.44h-4.56v-6.6c0-1.57-.03-3.6-2.19-3.6-2.2 0-2.54 1.71-2.54 3.48v6.72H7.54V8z"/></svg></a>
+        <a href="#" aria-label="GitHub"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.1.79-.25.79-.56v-2.18c-3.2.7-3.87-1.36-3.87-1.36-.52-1.33-1.28-1.68-1.28-1.68-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.74-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 015.78 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.24 2.76.12 3.05.73.81 1.18 1.84 1.18 3.1 0 4.42-2.7 5.39-5.27 5.68.41.36.78 1.05.78 2.12v3.14c0 .31.21.67.79.55C20.21 21.39 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5z"/></svg></a>
+        <a href="#" aria-label="YouTube"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 00-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 00.5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 002.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 002.1-2.1c.5-1.9.5-5.8.5-5.8s0-3.9-.5-5.8zM9.6 15.6V8.4l6.3 3.6z"/></svg></a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* === cursor effect removed === */
+
+/* === Nav scroll === */
+(function(){
+  const nav = document.getElementById('nav');
+  const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 20);
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+})();
+
+/* === Reveal on scroll === */
+(function(){
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }});
+  }, {threshold:0.12, rootMargin:'0px 0px -40px 0px'});
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+})();
+
+/* === Feature card spotlight === */
+document.querySelectorAll('.feat').forEach(card => {
+  card.addEventListener('mousemove', e => {
+    const r = card.getBoundingClientRect();
+    card.style.setProperty('--mx', `${e.clientX - r.left}px`);
+    card.style.setProperty('--my', `${e.clientY - r.top}px`);
+  });
+});
+
+/* === World map (binary digits forming continents) === */
+(function(){
+  const svgNS = 'http://www.w3.org/2000/svg';
+  const digitsG = document.getElementById('mapDigits');
+  const arcsG = document.getElementById('mapArcs');
+  const citiesG = document.getElementById('mapCities');
+  if (!digitsG) return;
+
+  // 64 cols x 24 rows. 'n' = land
+  const mask = [
+    "................................................................",
+    "............nnnnnnnnnnnn...nnn..nnnnnnnnnnnnnn..................",
+    "......nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn................",
+    "....nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn...............",
+    "...nnnnnnnnnnnnn..nnnnnnnnnn.nnnnnnnnnnnnnnnnnnnnn..............",
+    "..nnnnnnnnnnnnn..nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn..............",
+    "...nnnnnnnnn..nnnnnnnn.nnnnnnnnnnnnnnnnnnnnnnnnn................",
+    "....nnnnnn..nnnnnnnnnnnn.nnnnnnnnnnnnnnnnnnnnn..................",
+    ".....nnnn.nnnnnnnnnnnn.nnnnnnnnnnnnnnnnnnnnnn...................",
+    "......nnnnnnnnnn.nnnnnnnnn.nnnnnnnnnnnnnnnnn....................",
+    ".......nnnnnnnn..nnnnnnnnnn..nnnnnnnnnnnnnn.....................",
+    "........nnnnn...nnnnnnnnnnn..nnnnnnnnnnnn.......................",
+    "..........n....nnnnnnnnnnnnn.nnnnnnnnnn.........................",
+    "...............nnnnnnnnnnnnnnnnnnnnnnn..........................",
+    "................nnnnnnnnnnnnnnnnnnnn............................",
+    ".................nnnnnnnnnnnnnnnnn..............................",
+    ".................nnnnnnnnnnnnnnnn........nnnn...................",
+    ".................nnnnnnnnnnnnnn........nnnnnnnn.................",
+    "..................nnnnnnnnnnn..........nnnnnnnn.................",
+    "...................nnnnnnnnn............nnnnnn..................",
+    "....................nnnnnnn..............nnn....................",
+    "....................nnnnn.......................................",
+    ".....................nnn........................................",
+    "................................................................",
+  ];
+
+  const cols = 64, rows = 24;
+  const W = 640, H = 440;
+  const cellW = W / cols;
+  // Apply vertical perspective: top rows closer (smaller spacing), bottom rows expand
+  // Map row r → y by quadratic so it feels like a tilted plane
+  const yFor = (r) => {
+    const t = r / (rows - 1); // 0..1
+    // ease: y starts at 0.10*H near top, ends at 0.92*H at bottom
+    const eased = 0.10 + (0.92 - 0.10) * (t * t * 0.55 + t * 0.45);
+    return eased * H;
+  };
+
+  const digits = [];
+  for (let r=0; r<rows; r++){
+    const row = mask[r] || '';
+    for (let c=0; c<cols; c++){
+      if (row[c] === 'n'){
+        // small horizontal perspective: rows further "back" (smaller r) compress toward center a bit
+        const t = r / (rows - 1);
+        const compress = 0.78 + 0.22 * t; // 0.78 top → 1.0 bottom
+        const x = (c - cols/2) * cellW * compress + W/2 + cellW/2;
+        const y = yFor(r);
+        const size = 6 + t * 4; // bigger near bottom
+        const ch = Math.random() < 0.5 ? '0' : '1';
+        const el = document.createElementNS(svgNS, 'text');
+        el.setAttribute('x', x.toFixed(1));
+        el.setAttribute('y', y.toFixed(1));
+        el.setAttribute('font-size', size.toFixed(1));
+        el.setAttribute('text-anchor', 'middle');
+        el.setAttribute('dominant-baseline', 'middle');
+        el.textContent = ch;
+        if (Math.random() < 0.18) el.classList.add('bright');
+        digitsG.appendChild(el);
+        digits.push(el);
+      }
+    }
+  }
+
+  // Animate: flip random digits between 0 and 1
+  setInterval(() => {
+    const flips = Math.max(6, Math.floor(digits.length * 0.04));
+    for (let i=0; i<flips; i++){
+      const el = digits[(Math.random() * digits.length) | 0];
+      el.textContent = el.textContent === '0' ? '1' : '0';
+      el.classList.toggle('bright', Math.random() < 0.22);
+    }
+  }, 220);
+
+  // city points (approx canvas coordinates 640x440)
+  const cities = [
+    {name:'Lisboa', x:300, y:170},
+    {name:'São Paulo', x:225, y:300},
+    {name:'Madrid', x:305, y:160},
+    {name:'London', x:312, y:135},
+    {name:'NYC', x:190, y:170},
+    {name:'Berlin', x:328, y:135},
+    {name:'Sydney', x:545, y:340},
+    {name:'Tokyo', x:520, y:175},
+  ];
+
+  // arcs
+  const arcPairs = [
+    [4, 0], // NYC -> Lisboa
+    [0, 1], // Lisboa -> São Paulo
+    [2, 5], // Madrid -> Berlin
+    [5, 7], // Berlin -> Tokyo
+    [7, 6], // Tokyo -> Sydney
+  ];
+  arcPairs.forEach(([a,b]) => {
+    const p1 = cities[a], p2 = cities[b];
+    const mx = (p1.x + p2.x)/2;
+    const my = Math.min(p1.y, p2.y) - 50;
+    const path = document.createElementNS(svgNS, 'path');
+    path.setAttribute('d', `M ${p1.x} ${p1.y} Q ${mx} ${my} ${p2.x} ${p2.y}`);
+    path.setAttribute('class', 'arc');
+    arcsG.appendChild(path);
+  });
+
+  // city pulses
+  cities.forEach((c, i) => {
+    const ring = document.createElementNS(svgNS, 'circle');
+    ring.setAttribute('cx', c.x); ring.setAttribute('cy', c.y);
+    ring.setAttribute('class', 'ring');
+    ring.style.animationDelay = (i * 0.30) + 's';
+    citiesG.appendChild(ring);
+
+    const dot = document.createElementNS(svgNS, 'circle');
+    dot.setAttribute('cx', c.x); dot.setAttribute('cy', c.y);
+    dot.setAttribute('class', 'city');
+    dot.style.animationDelay = (i * 0.30) + 's';
+    citiesG.appendChild(dot);
+  });
+
+  setTimeout(() => document.getElementById('tag0')?.classList.add('in'), 700);
+  setTimeout(() => document.getElementById('tag1')?.classList.add('in'), 1200);
+  setTimeout(() => document.getElementById('tag2')?.classList.add('in'), 1700);
+})();
+
+/* === Hero demo: typing + leads === */
+(function(){
+  const promptEl = document.getElementById('promptText');
+  const statusEl = document.getElementById('demoStatus');
+  const statusTxt = document.getElementById('statusText');
+  const list = document.getElementById('leadsList');
+  const prompts = [
+    'quero 5 clínicas de estética em Lisboa',
+    'preciso de 8 escritórios de advocacia em São Paulo',
+    'busca 6 pet shops em Madrid com site',
+  ];
+  const dataByPrompt = {
+    0: [
+      {n:'Bella Pele Studio', c:'Lisboa · Estética', p:'+351 21 392 0114', s:9.2, t:'hot', i:'BP'},
+      {n:'Clínica Lumen', c:'Lisboa · Estética', p:'+351 21 845 0029', s:8.7, t:'hot', i:'CL'},
+      {n:'Avenida Aesthetic', c:'Lisboa · Estética', p:'+351 21 770 6612', s:7.1, t:'warm', i:'AA'},
+      {n:'Studio Renovare', c:'Cascais · Estética', p:'+351 21 482 3340', s:6.4, t:'warm', i:'SR'},
+      {n:'Pulse Beauty Lab', c:'Lisboa · Estética', p:'+351 21 234 8801', s:4.2, t:'cold', i:'PB'},
+    ],
+    1: [
+      {n:'Marcondes & Sá Advogados', c:'São Paulo · Direito', p:'+55 11 3045-9920', s:9.5, t:'hot', i:'MS'},
+      {n:'Veiga Trabalhista', c:'São Paulo · Direito', p:'+55 11 2167-3340', s:8.9, t:'hot', i:'VT'},
+      {n:'Ribeiro Advocacia', c:'São Paulo · Direito', p:'+55 11 4042-1188', s:8.2, t:'hot', i:'RA'},
+      {n:'Costa & Lima', c:'Santo André · Direito', p:'+55 11 4995-7720', s:7.0, t:'warm', i:'CL'},
+      {n:'Escritório Andrade', c:'São Paulo · Direito', p:'+55 11 3380-6611', s:6.4, t:'warm', i:'EA'},
+      {n:'Mendonça Jurídico', c:'São Paulo · Direito', p:'+55 11 5067-3322', s:5.5, t:'cold', i:'MJ'},
+      {n:'Banca Tavares', c:'Osasco · Direito', p:'+55 11 3902-1450', s:4.1, t:'cold', i:'BT'},
+      {n:'Holding Pereira', c:'São Paulo · Direito', p:'+55 11 2671-0099', s:7.6, t:'warm', i:'HP'},
+    ],
+    2: [
+      {n:'PetCare Madrid', c:'Madrid · Pet', p:'+34 91 425 3370', s:9.0, t:'hot', i:'PM'},
+      {n:'AmiPet Salamanca', c:'Madrid · Pet', p:'+34 91 870 2014', s:8.4, t:'hot', i:'AS'},
+      {n:'Mascotas Plaza', c:'Madrid · Pet', p:'+34 91 530 6678', s:7.2, t:'warm', i:'MP'},
+      {n:'Doggie Spa Chamberí', c:'Madrid · Pet', p:'+34 91 415 9921', s:6.8, t:'warm', i:'DS'},
+      {n:'Patitas Studio', c:'Madrid · Pet', p:'+34 91 322 8804', s:5.2, t:'cold', i:'PS'},
+      {n:'Urban Pet', c:'Madrid · Pet', p:'+34 91 760 1133', s:4.6, t:'cold', i:'UP'},
+    ],
+  };
+  const labels = {hot:'🔥 Quente', warm:'🌡️ Morno', cold:'❄️ Frio'};
+
+  let idx = 0;
+  async function typeOut(s){
+    promptEl.textContent = '';
+    for (let i=0;i<s.length;i++){
+      promptEl.textContent += s[i];
+      await sleep(28 + Math.random()*40);
+    }
+  }
+  function sleep(n){return new Promise(r=>setTimeout(r,n))}
+  async function runDemo(){
+    list.innerHTML = '';
+    statusEl.classList.remove('show');
+    await typeOut(prompts[idx]);
+    await sleep(450);
+    statusTxt.textContent = 'Buscando no Google Maps…';
+    statusEl.classList.add('show');
+    await sleep(900);
+    statusTxt.textContent = 'Validando sites com IA…';
+    await sleep(900);
+    statusTxt.textContent = 'Atribuindo score de qualidade…';
+    await sleep(700);
+    const rows = dataByPrompt[idx];
+    rows.forEach(r => list.appendChild(makeLead(r)));
+    // animate in
+    [...list.children].forEach((el, i) => {
+      setTimeout(() => el.classList.add('in'), 120 * i);
+    });
+    await sleep(rows.length * 120 + 400);
+    statusTxt.textContent = `✓ ${rows.length} leads qualificados em ${(rows.length*0.4+1.2).toFixed(1)}s`;
+    await sleep(2800);
+    idx = (idx+1) % prompts.length;
+    runDemo();
+  }
+  function makeLead(d){
+    const el = document.createElement('div');
+    el.className = 'lead';
+    el.innerHTML = `
+      <div class="avatar">${d.i}</div>
+      <div class="meta"><div class="name">${d.n}</div><div class="sub">${d.c}</div></div>
+      <div class="score">${d.s.toFixed(1)}</div>
+      <div><span class="tag ${d.t}">${labels[d.t]}</span></div>
+    `;
+    return el;
+  }
+  document.getElementById('promptGo').addEventListener('click', () => {
+    idx = (idx) % prompts.length; runDemo();
+  });
+  runDemo();
+})();
+
+/* === Overview map dots + clock === */
+(function(){
+  const g = document.getElementById('ovMapDots');
+  if (g){
+    // Simple world map silhouette via dot grid w/ continent mask
+    const mask = [
+      "................................................................",
+      "..........nnnnnnnnnnnn....nnn..nnnnnnnnnnnnnn...................",
+      "....nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn..................",
+      "...nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn.................",
+      "...nnnnnnnnnnnnn..nnnnnnnnnn.nnnnnnnnnnnnnnnnnnn................",
+      "..nnnnnnnnnnnnn..nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn................",
+      "...nnnnnnnnn..nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn..................",
+      ".....nnnnn..nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn...................",
+      "......nnn.nnnnnnnnnnnn.nnnnnnnnnnnnnnnnnnnnn....................",
+      ".......nnnnnnnn..nnnnnnnnn..nnnnnnnnnnnnnnn.....................",
+      "........nnnnn..nnnnnnnnnnn..nnnnnnnnnnnn........................",
+      ".........n....nnnnnnnnnnn..nnnnnnnnnnn..........................",
+      "..............nnnnnnnnnnnnnnnnnnnnnn............................",
+      "...............nnnnnnnnnnnnnnnnnnnn.............................",
+      "................nnnnnnnnnnnnnnnn................................",
+      ".................nnnnnnnnnnnnn........nnnnn.....................",
+      "..................nnnnnnnnnnn........nnnnnnn....................",
+      "..................nnnnnnnnnn..........nnnnnn....................",
+      "...................nnnnnnnn............nnnn.....................",
+      "....................nnnnnn..............nn......................",
+      "....................nnnn........................................",
+      ".....................nn.........................................",
+    ];
+    const cols = 64, rows = mask.length;
+    const W = 1000, H = 460;
+    const cellW = W / cols, cellH = H / rows;
+    for (let r=0;r<rows;r++){
+      const row = mask[r] || '';
+      for (let c=0;c<cols;c++){
+        if (row[c]==='n'){
+          const cx = c*cellW + cellW/2;
+          const cy = r*cellH + cellH/2;
+          const dot = document.createElementNS('http://www.w3.org/2000/svg','circle');
+          dot.setAttribute('cx', cx.toFixed(1));
+          dot.setAttribute('cy', cy.toFixed(1));
+          dot.setAttribute('r', 1.7);
+          g.appendChild(dot);
+        }
+      }
+    }
+  }
+  const clock = document.getElementById('ovClock');
+  if (clock){
+    const tick = () => {
+      const d = new Date();
+      clock.textContent = [d.getHours(), d.getMinutes(), d.getSeconds()]
+        .map(n => String(n).padStart(2,'0')).join(':');
+    };
+    tick(); setInterval(tick, 1000);
+  }
+})();
+
+/* === legacy dash removed === */
+
+/* === Pricing toggle === */
+(function(){
+  const bill = document.getElementById('bill');
+  if (!bill) return;
+  bill.querySelectorAll('button').forEach(b => {
+    b.addEventListener('click', () => {
+      bill.querySelectorAll('button').forEach(x => x.classList.remove('on'));
+      b.classList.add('on');
+      const mode = b.dataset.mode;
+      document.querySelectorAll('.price .amt[data-m]').forEach(el => {
+        el.textContent = mode === 'y' ? el.dataset.y : el.dataset.m;
+      });
+    });
+  });
+})();
+
+/* === Testimonials carousel === */
+(function(){
+  const data = [
+    {n:'Henrique Castro', r:'Freelancer · Growth B2B', c:'#7C3AED,#A78BFA', t:'Antes eu queimava sábado inteiro pra montar uma lista de 40 leads. Agora deixo rodando enquanto tomo café. Mudou minha vida.', s:5},
+    {n:'Marina Tavares', r:'Sócia · Agência Lumen', c:'#06B6D4,#67E8F9', t:'A classificação quente/morno/frio é o que faz diferença real. Time não perde mais tempo com lead frio.', s:5},
+    {n:'Diogo Lobato', r:'SDR · SaaS de logística', c:'#F97316,#FBBF24', t:'Score + dica de abordagem = primeira resposta em 30% dos casos. Nunca tinha visto isso com nenhuma ferramenta.', s:5},
+    {n:'Camila Ribeiro', r:'Consultora · Mercado pet', c:'#10B981,#34D399', t:'Cobertura em PT, BR e ES sem precisar trocar de ferramenta. Meu fluxo internacional ficou viável.', s:5},
+    {n:'Rafael Pinheiro', r:'Founder · Studio.42', c:'#A78BFA,#5B6DFB', t:'Em 3 meses passei de 200 para 800 leads/mês com a mesma operação. Sem contratar ninguém.', s:5},
+    {n:'Beatriz Almeida', r:'Head de Vendas · Indústria', c:'#06B6D4,#A78BFA', t:'Plugamos no nosso CRM via webhook em 20 minutos. Setup mais rápido que ferramenta nenhuma.', s:5},
+  ];
+  const track = document.getElementById('track');
+  const html = data.map(d => `
+    <div class="testi">
+      <div class="stars">★★★★★</div>
+      <p>"${d.t}"</p>
+      <div class="who">
+        <div class="av" style="background:linear-gradient(135deg,${d.c})">${initials(d.n)}</div>
+        <div class="meta"><b>${d.n}</b><span>${d.r}</span></div>
+      </div>
+    </div>
+  `).join('');
+  track.innerHTML = html + html; // duplicate for seamless loop
+  function initials(n){return n.split(' ').map(p=>p[0]).slice(0,2).join('')}
+})();
+</script>
+
+<!-- ===================== MODAL DE LOGIN ===================== -->
+<style>
+  .auth-overlay {
+    position: fixed; inset: 0; z-index: 9999;
+    background: rgba(8, 8, 12, 0.82);
+    backdrop-filter: blur(8px);
+    display: none;
+    align-items: center; justify-content: center;
+    padding: 20px;
+    animation: authFadeIn 0.2s ease-out;
+  }
+  .auth-overlay.show { display: flex; }
+  
+  @keyframes authFadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes authSlideUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  
+  .auth-modal {
+    width: 100%; max-width: 440px;
+    background: #14171b;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 32px 28px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(124,58,237,0.15);
+    animation: authSlideUp 0.25s ease-out;
+    position: relative;
+  }
+  .auth-close {
+    position: absolute; top: 14px; right: 14px;
+    width: 32px; height: 32px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 6px;
+    color: #94A3B8;
+    cursor: pointer;
+    display: grid; place-items: center;
+    font-size: 16px;
+    transition: all 0.15s;
+  }
+  .auth-close:hover { background: rgba(255,255,255,0.08); color: #F8FAFC; }
+  
+  .auth-logo {
+    width: 44px; height: 44px;
+    background: linear-gradient(135deg, #7C3AED, #06B6D4);
+    border-radius: 10px;
+    margin: 0 auto 16px;
+    display: grid; place-items: center;
+    color: white; font-weight: 700; font-size: 18px;
+    box-shadow: 0 8px 24px rgba(124,58,237,0.4);
+  }
+  .auth-title {
+    text-align: center;
+    font-size: 22px; font-weight: 700;
+    color: #F8FAFC;
+    margin: 0 0 4px;
+    letter-spacing: -0.01em;
+  }
+  .auth-sub {
+    text-align: center;
+    font-size: 13px;
+    color: #94A3B8;
+    margin: 0 0 22px;
+  }
+  
+  .auth-tabs {
+    display: flex; gap: 4px;
+    background: #0f1114;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 8px;
+    padding: 3px;
+    margin-bottom: 20px;
+  }
+  .auth-tab {
+    flex: 1;
+    padding: 9px;
+    background: transparent;
+    border: none;
+    border-radius: 5px;
+    font-size: 13px; font-weight: 500;
+    color: #94A3B8;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: inherit;
+  }
+  .auth-tab.active {
+    background: #1a1e23;
+    color: #F8FAFC;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  
+  .auth-field { margin-bottom: 12px; }
+  .auth-field label {
+    display: block;
+    font-size: 10.5px;
+    font-family: 'JetBrains Mono', monospace;
+    color: #94A3B8;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .auth-field input {
+    width: 100%;
+    padding: 11px 14px;
+    background: #0f1114;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 7px;
+    font-size: 14px;
+    color: #F8FAFC;
+    outline: none;
+    transition: border-color 0.15s;
+    font-family: inherit;
+    box-sizing: border-box;
+  }
+  .auth-field input:focus {
+    border-color: #7C3AED;
+    box-shadow: 0 0 0 3px rgba(124,58,237,0.12);
+  }
+  
+  .auth-submit {
+    width: 100%;
+    margin-top: 8px;
+    padding: 12px;
+    background: linear-gradient(135deg, #7C3AED, #06B6D4);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 14px; font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .auth-submit:hover:not(:disabled) {
+    box-shadow: 0 8px 24px rgba(124,58,237,0.35);
+    transform: translateY(-1px);
+  }
+  .auth-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+  
+  .auth-error {
+    background: rgba(239,68,68,0.1);
+    border: 1px solid rgba(239,68,68,0.3);
+    border-radius: 7px;
+    padding: 10px 12px;
+    font-size: 12px;
+    color: #fca5a5;
+    margin-top: 12px;
+    display: none;
+  }
+  .auth-error.show { display: block; }
+  
+  .auth-success {
+    background: rgba(16,185,129,0.1);
+    border: 1px solid rgba(16,185,129,0.3);
+    border-radius: 7px;
+    padding: 10px 12px;
+    font-size: 12px;
+    color: #6ee7b7;
+    margin-top: 12px;
+    display: none;
+  }
+  .auth-success.show { display: block; }
+  
+  .auth-forgot {
+    background: transparent;
+    border: none;
+    color: #7C3AED;
+    font-size: 12px;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    margin-top: 14px;
+    width: 100%;
+    text-align: center;
+    font-family: inherit;
+  }
+  
+  .auth-spinner {
+    width: 14px; height: 14px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: authSpin 0.7s linear infinite;
+  }
+  @keyframes authSpin { to { transform: rotate(360deg); } }
+</style>
+
+<div class="auth-overlay" id="authOverlay">
+  <div class="auth-modal" onclick="event.stopPropagation()">
+    <button class="auth-close" onclick="closeAuth()">✕</button>
+    <div class="auth-logo">P</div>
+    <h2 class="auth-title" id="authTitle">Entrar</h2>
+    <p class="auth-sub" id="authSub">Acesse sua conta Prospect IA</p>
+    
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tabLogin" onclick="switchAuthMode('login')">Entrar</button>
+      <button class="auth-tab" id="tabSignup" onclick="switchAuthMode('signup')">Criar conta</button>
+    </div>
+    
+    <form id="authForm" onsubmit="handleAuthSubmit(event)">
+      <div class="auth-field" id="nameField" style="display:none">
+        <label>Nome</label>
+        <input type="text" id="authName" placeholder="Seu nome">
+      </div>
+      <div class="auth-field">
+        <label>Email</label>
+        <input type="email" id="authEmail" placeholder="seu@email.com" required>
+      </div>
+      <div class="auth-field">
+        <label>Senha</label>
+        <input type="password" id="authPassword" placeholder="Mínimo 6 caracteres" required minlength="6">
+      </div>
+      
+      <button type="submit" class="auth-submit" id="authSubmitBtn">
+        <span id="authBtnText">Entrar</span>
+      </button>
+      
+      <div class="auth-error" id="authError"></div>
+      <div class="auth-success" id="authSuccess"></div>
+      
+      <button type="button" class="auth-forgot" id="forgotBtn" onclick="handleForgotPassword()">Esqueci minha senha</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  let authMode = 'login';
+  
+  function openAuth(mode) {
+    authMode = mode || 'login';
+    switchAuthMode(authMode);
+    document.getElementById('authOverlay').classList.add('show');
+    document.body.style.overflow = 'hidden';
+    setTimeout(() => document.getElementById('authEmail').focus(), 100);
+  }
+  
+  function closeAuth() {
+    document.getElementById('authOverlay').classList.remove('show');
+    document.body.style.overflow = '';
+    clearAuthMessages();
+  }
+  
+  function switchAuthMode(mode) {
+    authMode = mode;
+    clearAuthMessages();
+    const isSignup = mode === 'signup';
+    
+    document.getElementById('tabLogin').classList.toggle('active', !isSignup);
+    document.getElementById('tabSignup').classList.toggle('active', isSignup);
+    document.getElementById('nameField').style.display = isSignup ? 'block' : 'none';
+    document.getElementById('authTitle').textContent = isSignup ? 'Criar conta' : 'Entrar';
+    document.getElementById('authSub').textContent = isSignup 
+      ? 'Comece grátis com 50 leads/mês' 
+      : 'Acesse sua conta Prospect IA';
+    document.getElementById('authBtnText').textContent = isSignup ? 'Criar conta' : 'Entrar';
+    document.getElementById('forgotBtn').style.display = isSignup ? 'none' : 'block';
+  }
+  
+  function clearAuthMessages() {
+    document.getElementById('authError').classList.remove('show');
+    document.getElementById('authSuccess').classList.remove('show');
+  }
+  
+  function showAuthError(msg) {
+    const el = document.getElementById('authError');
+    el.textContent = msg;
+    el.classList.add('show');
+    document.getElementById('authSuccess').classList.remove('show');
+  }
+  
+  function showAuthSuccess(msg) {
+    const el = document.getElementById('authSuccess');
+    el.textContent = msg;
+    el.classList.add('show');
+    document.getElementById('authError').classList.remove('show');
+  }
+  
+  function translateAuthError(msg) {
+    if (msg.includes('Invalid login credentials')) return 'Email ou senha incorretos.';
+    if (msg.includes('Email not confirmed')) return 'Email ainda não confirmado. Verifique sua caixa de entrada.';
+    if (msg.includes('User already registered')) return 'Este email já está cadastrado. Faça login.';
+    if (msg.includes('Password should be at least')) return 'A senha deve ter pelo menos 6 caracteres.';
+    if (msg.includes('rate limit')) return 'Muitas tentativas. Aguarde alguns minutos.';
+    return msg;
+  }
+  
+  async function handleAuthSubmit(e) {
+    e.preventDefault();
+    clearAuthMessages();
+    
+    const email = document.getElementById('authEmail').value;
+    const password = document.getElementById('authPassword').value;
+    const name = document.getElementById('authName').value;
+    const btn = document.getElementById('authSubmitBtn');
+    const btnText = document.getElementById('authBtnText');
+    
+    btn.disabled = true;
+    btnText.innerHTML = '<span class="auth-spinner"></span>';
+    
+    try {
+      if (authMode === 'signup') {
+        const { data, error } = await supabaseClient.auth.signUp({
+          email, password,
+          options: { data: { full_name: name } }
+        });
+        if (error) throw error;
+        if (data.user) {
+          showAuthSuccess('Conta criada! Verifique seu email para confirmar.');
+          setTimeout(() => switchAuthMode('login'), 2500);
+        }
+      } else {
+        const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        showAuthSuccess('Login bem-sucedido! Redirecionando...');
+        setTimeout(() => { window.location.href = '/app.html'; }, 800);
+      }
+    } catch (err) {
+      showAuthError(translateAuthError(err.message));
+    } finally {
+      btn.disabled = false;
+      btnText.textContent = authMode === 'signup' ? 'Criar conta' : 'Entrar';
+    }
+  }
+  
+  async function handleForgotPassword() {
+    const email = document.getElementById('authEmail').value;
+    if (!email) {
+      showAuthError('Digite seu email primeiro.');
+      return;
+    }
+    try {
+      const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin + '/app.html'
+      });
+      if (error) throw error;
+      showAuthSuccess('Email de recuperação enviado! Verifique sua caixa.');
+    } catch (err) {
+      showAuthError(translateAuthError(err.message));
+    }
+  }
+  
+  // Fecha modal ao clicar fora
+  document.getElementById('authOverlay').addEventListener('click', closeAuth);
+  
+  // ESC fecha
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && document.getElementById('authOverlay').classList.contains('show')) {
+      closeAuth();
+    }
+  });
+</script>
+
+</body>
+</html>

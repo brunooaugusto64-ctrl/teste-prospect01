@@ -1,0 +1,169 @@
+/* Prospect IA — purple/cyan telemetry */
+
+:root {
+  --bg-0: #0a0b0d;        /* deepest void */
+  --bg-1: #0f1114;        /* main app bg */
+  --bg-2: #14171b;        /* surfaces / cards */
+  --bg-3: #1a1e23;        /* elevated */
+  --bg-4: #232830;        /* hover */
+  --line: #1f242b;        /* hairline borders */
+  --line-2: #2a3038;      /* stronger borders */
+  --line-3: #3a4250;
+
+  --fg-0: #f4f5f7;        /* primary text */
+  --fg-1: #b8bec8;        /* secondary */
+  --fg-2: #7a818d;        /* tertiary / labels */
+  --fg-3: #525964;        /* muted */
+  --fg-4: #2f3540;        /* placeholder */
+
+  /* === PALETA NOVA: ROXO + CIANO (matching landing) === */
+  --accent: #7C3AED;                            /* purple primary */
+  --accent-2: #6D28D9;                          /* purple deeper */
+  --accent-cyan: #06B6D4;                       /* cyan secondary */
+  --accent-cyan-2: #0891B2;                     /* cyan deeper */
+  --accent-glow: rgba(124, 58, 237, 0.25);      /* purple glow */
+  --accent-glow-cyan: rgba(6, 182, 212, 0.25);  /* cyan glow */
+  --accent-fg: #FFFFFF;                         /* white text on purple */
+
+  /* Gradiente roxo → ciano (igual landing page) */
+  --gradient-primary: linear-gradient(135deg, #7C3AED 0%, #06B6D4 100%);
+  --gradient-primary-hover: linear-gradient(135deg, #8B47F0 0%, #1AC0DC 100%);
+  --gradient-soft: linear-gradient(135deg, rgba(124,58,237,0.15) 0%, rgba(6,182,212,0.15) 100%);
+
+  --good: oklch(0.72 0.15 155);
+  --warn: oklch(0.75 0.15 55);
+  --bad:  oklch(0.65 0.2 25);
+  --info: oklch(0.7 0.12 230);
+
+  --r-sm: 4px;
+  --r-md: 6px;
+  --r-lg: 10px;
+
+  --shadow-1: 0 1px 0 rgba(255,255,255,0.03) inset, 0 1px 2px rgba(0,0,0,0.4);
+  --shadow-2: 0 8px 24px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.04) inset;
+  --shadow-glow: 0 0 24px rgba(124, 58, 237, 0.3);
+
+  --font-sans: "Inter", -apple-system, "Helvetica Neue", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", ui-monospace, Menlo, monospace;
+  --font-display: "Inter", system-ui, sans-serif;
+}
+
+/* Font pairing presets */
+[data-font="grotesk"] {
+  --font-sans: "Inter Tight", system-ui, sans-serif;
+  --font-display: "Inter Tight", system-ui, sans-serif;
+}
+[data-font="serif"] {
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-display: "Instrument Serif", "Times New Roman", serif;
+}
+[data-font="mono"] {
+  --font-sans: "JetBrains Mono", monospace;
+  --font-display: "JetBrains Mono", monospace;
+}
+[data-font="geist"] {
+  --font-sans: "Geist", system-ui, sans-serif;
+  --font-display: "Geist", system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg-1);
+  color: var(--fg-0);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+#root { min-height: 100vh; }
+
+button { font: inherit; color: inherit; cursor: pointer; }
+input, textarea, select { font: inherit; color: inherit; }
+
+::selection { background: var(--accent); color: var(--accent-fg); }
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--line-2); border-radius: 10px; border: 2px solid var(--bg-1); }
+::-webkit-scrollbar-thumb:hover { background: var(--line-3); }
+
+/* utility */
+.mono { font-family: var(--font-mono); font-feature-settings: "ss01", "ss02"; }
+.tabular { font-variant-numeric: tabular-nums; }
+.uppercase-label {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-2);
+}
+
+/* dotted grid bg */
+.grid-bg {
+  background-image: radial-gradient(rgba(255,255,255,0.025) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+
+/* keyframes */
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.85); }
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes scan {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.shimmer {
+  background: linear-gradient(90deg, var(--bg-2) 0%, var(--bg-3) 50%, var(--bg-2) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s linear infinite;
+}
+
+.cursor-blink::after {
+  content: "▍";
+  display: inline-block;
+  margin-left: 2px;
+  color: var(--accent);
+  animation: blink 1s step-end infinite;
+}
+
+/* === BOTÕES COM GRADIENTE (matching landing) === */
+.btn-gradient {
+  background: var(--gradient-primary);
+  color: white;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.btn-gradient:hover {
+  background: var(--gradient-primary-hover);
+  box-shadow: var(--shadow-glow);
+  transform: translateY(-1px);
+}
+
+/* === BADGES E HIGHLIGHTS === */
+.text-gradient {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
