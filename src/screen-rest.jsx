@@ -316,7 +316,7 @@ const BillingScreen = () => {
               <div style={{ fontSize: 14, fontWeight: 600, fontFamily: "var(--font-display)" }}>{t.name}</div>
               <div style={{ fontSize: 11.5, color: "var(--fg-2)", marginTop: 4 }}>{t.description}</div>
               <div style={{ marginTop: 18, display: "flex", alignItems: "baseline", gap: 4 }}>
-                <span style={{ fontSize: 12, color: "var(--fg-2)" }}>€</span>
+                <span style={{ fontSize: 14, color: "var(--fg-2)", fontWeight: 500 }}>R$</span>
                 <span className="tabular" style={{ fontSize: 36, fontWeight: 500, fontFamily: "var(--font-display)", letterSpacing: "-0.02em", lineHeight: 1 }}>{t.price}</span>
                 <span style={{ fontSize: 12, color: "var(--fg-2)" }}>/mês</span>
               </div>
