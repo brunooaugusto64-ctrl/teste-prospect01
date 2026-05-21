@@ -1,4 +1,4 @@
-// Lead Management table — telefone abre WhatsApp + exportação CSV + status de extração
+// Lead Management table — telefone abre WhatsApp + exportação CSV
 
 const STATUS_COLORS = {
   novo: "var(--fg-2)",
@@ -36,11 +36,14 @@ const cleanUrl = (url) => {
   return url.replace(/^https?:\/\//, "").replace(/^www\./, "").split("/")[0];
 };
 
+// Limpa telefone pra formato WhatsApp (só números)
 const phoneToWhatsApp = (phone) => {
   if (!phone) return "";
+  // Remove tudo que não é número
   return phone.replace(/\D/g, "");
 };
 
+// Gera URL do WhatsApp
 const buildWhatsAppUrl = (phone) => {
   const clean = phoneToWhatsApp(phone);
   if (!clean) return "";
@@ -132,89 +135,6 @@ const FilterChip = ({ label, value, active, onClick, onClear }) => (
 );
 
 // =====================================================
-// MENSAGEM DE EXTRAÇÃO EM CURSO
-// =====================================================
-const ExtractionStatus = () => {
-  const [status, setStatus] = React.useState(null);
-  const [secondsLeft, setSecondsLeft] = React.useState(0);
-
-  React.useEffect(() => {
-    const check = () => {
-      try {
-        const startedAt = parseInt(localStorage.getItem("extracting_at"), 10);
-        const count = parseInt(localStorage.getItem("extracting_count"), 10) || 10;
-
-        if (!startedAt) {
-          setStatus(null);
-          return;
-        }
-
-        const elapsed = Math.floor((Date.now() - startedAt) / 1000);
-        const remaining = Math.max(0, 90 - elapsed);
-
-        if (remaining === 0) {
-          localStorage.removeItem("extracting_at");
-          localStorage.removeItem("extracting_count");
-          setStatus(null);
-          setSecondsLeft(0);
-        } else {
-          setStatus({ startedAt, count });
-          setSecondsLeft(remaining);
-        }
-      } catch (e) {
-        setStatus(null);
-      }
-    };
-
-    check();
-    const interval = setInterval(check, 1000);
-    return () => clearInterval(interval);
-  }, []);
-
-  if (!status) return null;
-
-  return (
-    <div style={{
-      padding: "10px 24px",
-      borderBottom: "1px solid var(--line)",
-      background: "var(--bg-1)",
-      display: "flex",
-      alignItems: "center",
-      gap: 10,
-      fontSize: 12,
-      color: "var(--fg-1)",
-    }}>
-      <div style={{
-        width: 12, height: 12, borderRadius: "50%",
-        border: "1.5px solid var(--line-2)", borderTopColor: "var(--accent)",
-        animation: "spin 0.8s linear infinite",
-        flexShrink: 0,
-      }}/>
-
-      <span style={{ flex: 1 }}>
-        A processar a tua extração de <strong style={{ color: "var(--accent)" }}>{status.count} leads</strong>... os leads chegam em <strong style={{ color: "var(--fg-0)" }}>~{secondsLeft}s</strong>
-      </span>
-
-      <button
-        onClick={() => {
-          localStorage.removeItem("extracting_at");
-          localStorage.removeItem("extracting_count");
-          window.location.reload();
-        }}
-        style={{
-          width: 22, height: 22, display: "grid", placeItems: "center",
-          background: "transparent", border: "1px solid var(--line-2)", borderRadius: 4,
-          color: "var(--fg-2)", cursor: "pointer",
-        }}
-        title="Dispensar"
-      >
-        <Icon name="x" size={10}/>
-      </button>
-    </div>
-  );
-};
-
-// =====================================================
 // EXPORTAR CSV
 // =====================================================
 const exportToCSV = (leads) => {
@@ -223,6 +143,7 @@ const exportToCSV = (leads) => {
     return;
   }
 
+  // Headers das colunas (em PT-BR)
   const headers = [
     "Nome",
     "Categoria",
@@ -234,15 +155,18 @@ const exportToCSV = (leads) => {
     "Adicionado em",
   ];
 
+  // Função pra escapar vírgulas e aspas
   const escapeCSV = (value) => {
     if (value == null) return "";
     const str = String(value);
+    // Se tem vírgula, aspas ou quebra de linha, envolve em aspas
     if (str.includes(",") || str.includes('"') || str.includes("\n")) {
       return `"${str.replace(/"/g, '""')}"`;
     }
     return str;
   };
 
+  // Constroi linhas
   const rows = leads.map(lead => [
     escapeCSV(lead.name),
     escapeCSV(lead.category),
@@ -254,9 +178,11 @@ const exportToCSV = (leads) => {
     escapeCSV(lead.created_at ? new Date(lead.created_at).toLocaleDateString("pt-BR") : ""),
   ].join(","));
 
+  // BOM pra Excel reconhecer UTF-8 (acentos funcionarem)
   const BOM = "\uFEFF";
   const csv = BOM + headers.join(",") + "\n" + rows.join("\n");
 
+  // Download
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
@@ -382,11 +308,14 @@ const LeadsScreen = ({ onOpenLead, onOpenExtract }) => {
     else setSelected(new Set(rows.map(r => r.id)));
   };
 
+  // Exporta selecionados ou TODOS filtrados
   const handleExport = () => {
     if (selected.size > 0) {
+      // Exporta só selecionados
       const selectedLeads = leads.filter(l => selected.has(l.id));
       exportToCSV(selectedLeads);
     } else {
+      // Exporta todos filtrados (rows)
       exportToCSV(rows);
     }
   };
@@ -412,17 +341,11 @@ const LeadsScreen = ({ onOpenLead, onOpenExtract }) => {
   }
 
   if (leads.length === 0) {
-    return (
-      <div style={{ display: "flex", flexDirection: "column" }}>
-        <ExtractionStatus />
-        <LeadsEmptyState onOpenExtract={onOpenExtract}/>
-      </div>
-    );
+    return <LeadsEmptyState onOpenExtract={onOpenExtract}/>;
   }
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "calc(100vh - 78px)" }}>
-      <ExtractionStatus />
       <style>{`
         @keyframes row-fade-in {
           from { opacity: 0; transform: translateY(4px); }
@@ -444,6 +367,7 @@ const LeadsScreen = ({ onOpenLead, onOpenExtract }) => {
         }
       `}</style>
 
+      {/* Toolbar */}
       <div style={{
         padding: "16px 24px 14px",
         borderBottom: "1px solid var(--line)",
@@ -608,6 +532,7 @@ const LeadsScreen = ({ onOpenLead, onOpenExtract }) => {
                     <input type="checkbox" checked={sel} readOnly style={{ accentColor: "var(--accent)", cursor: "pointer" }}/>
                   </td>
 
+                  {/* Empresa */}
                   <td style={{ padding: "12px 14px" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                       <div className="lead-avatar" style={{
@@ -632,6 +557,7 @@ const LeadsScreen = ({ onOpenLead, onOpenExtract }) => {
                     </div>
                   </td>
 
+                  {/* Categoria */}
                   <td style={{ padding: "12px 14px" }}>
                     {r.category ? (
                       <span style={{
@@ -647,6 +573,7 @@ const LeadsScreen = ({ onOpenLead, onOpenExtract }) => {
                     )}
                   </td>
 
+                  {/* Cidade */}
                   <td style={{ padding: "12px 14px" }}>
                     {r.city ? (
                       <span style={{
@@ -661,9 +588,10 @@ const LeadsScreen = ({ onOpenLead, onOpenExtract }) => {
                     )}
                   </td>
 
+                  {/* TELEFONE → WHATSAPP */}
                   <td style={{ padding: "12px 14px" }}>
                     {r.phone ? (
-                      
+                      <a
                         href={waUrl}
                         target="_blank"
                         rel="noopener noreferrer"
@@ -682,6 +610,7 @@ const LeadsScreen = ({ onOpenLead, onOpenExtract }) => {
                           border: "1px solid var(--line-2)",
                         }}
                       >
+                        {/* Ícone WhatsApp inline (SVG) */}
                         <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style={{ flexShrink: 0 }}>
                           <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
                         </svg>
@@ -692,9 +621,10 @@ const LeadsScreen = ({ onOpenLead, onOpenExtract }) => {
                     )}
                   </td>
 
+                  {/* Website */}
                   <td style={{ padding: "12px 14px" }}>
                     {r.website ? (
-                      
+                      <a
                         href={r.website.startsWith("http") ? r.website : "https://" + r.website}
                         target="_blank"
                         rel="noopener noreferrer"
@@ -716,10 +646,12 @@ const LeadsScreen = ({ onOpenLead, onOpenExtract }) => {
                     )}
                   </td>
 
+                  {/* Score */}
                   <td style={{ padding: "12px 14px" }}>
                     <ScoreBadge score={r.score}/>
                   </td>
 
+                  {/* Status */}
                   <td style={{ padding: "12px 14px" }}>
                     <span style={{
                       display: "inline-flex", alignItems: "center", gap: 5,
@@ -739,6 +671,7 @@ const LeadsScreen = ({ onOpenLead, onOpenExtract }) => {
                     </span>
                   </td>
 
+                  {/* Adicionado */}
                   <td style={{
                     padding: "12px 14px",
                     color: "var(--fg-2)", fontSize: 11.5,
