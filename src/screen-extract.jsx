@@ -4,7 +4,7 @@ const N8N_WEBHOOK_URL = "https://kujoy.app.n8n.cloud/webhook/a394b33c-3538-4f11-
 const N8N_WEBHOOK_TOKEN = "prospect-ia-secret-s7xq0aldxccvbvivtf91";
 
 const PLAN_LIMITS_EXTRACT = {
-  free: 50,  
+  free: 50,
   starter: 250,
   growth: 600,
   scale: 1500,
@@ -17,25 +17,17 @@ const PLAN_LABELS = {
   scale: "Scale",
 };
 
-// Default quando prompt não tem número claro
 const DEFAULT_LEADS_PER_PROMPT = 10;
 
-// Extrai o número de leads do prompt do user
-// "10 cafés em BH" → 10
-// "vinte clínicas" → 20
-// "cafés em BH" → 10 (default)
-// "300 dentistas" → 300 (mesmo se passar do limite, vai bloquear)
 const extractLeadCount = (prompt) => {
   if (!prompt) return DEFAULT_LEADS_PER_PROMPT;
 
-  // Tenta achar um número direto no início ou meio da frase
   const numMatch = prompt.match(/\b(\d{1,4})\b/);
   if (numMatch) {
     const n = parseInt(numMatch[1], 10);
     if (n > 0 && n <= 1500) return n;
   }
 
-  // Tenta achar números por extenso comuns em português
   const wordsToNum = {
     "um": 1, "uma": 1, "dois": 2, "duas": 2, "três": 3, "tres": 3,
     "quatro": 4, "cinco": 5, "seis": 6, "sete": 7, "oito": 8, "nove": 9,
@@ -57,10 +49,10 @@ const extractLeadCount = (prompt) => {
 };
 
 const ExtractModal = ({ open, onClose, onComplete }) => {
-  const [phase, setPhase] = React.useState("idle"); // idle | checking | sending | sent | error | blocked
+  const [phase, setPhase] = React.useState("idle");
   const [prompt, setPrompt] = React.useState("");
   const [errorMsg, setErrorMsg] = React.useState(null);
-  const [usage, setUsage] = React.useState(null); // { used, limit, plan, requested }
+  const [usage, setUsage] = React.useState(null);
   const inputRef = React.useRef(null);
 
   const SAMPLES = [
@@ -115,8 +107,6 @@ const ExtractModal = ({ open, onClose, onComplete }) => {
   };
 
   const start = async () => {
-    console.log("🟢 [1] start chamado, prompt:", prompt);
-
     if (!prompt.trim()) return;
 
     setPhase("checking");
@@ -126,7 +116,6 @@ const ExtractModal = ({ open, onClose, onComplete }) => {
       const { data: { user } } = await window.supabase.auth.getUser();
       if (!user) throw new Error("Sessão expirada. Faz login novamente.");
 
-      // VERIFICA LIMITE PREVENTIVAMENTE
       const { data: sub } = await window.supabase
         .from("subscriptions")
         .select("plan")
@@ -147,11 +136,7 @@ const ExtractModal = ({ open, onClose, onComplete }) => {
       const requested = extractLeadCount(prompt);
       const wouldBe = used + requested;
 
-      console.log(`🟢 plano=${plan}, usado=${used}, pedido=${requested}, ficaria=${wouldBe}, limite=${limit}`);
-
-      // BLOQUEIO PREVENTIVO: se executando ESSE prompt vai passar do limite
       if (wouldBe > limit) {
-        console.log("🔴 BLOQUEIO PREVENTIVO");
         setUsage({ used, limit, plan, requested });
         setPhase("blocked");
         return;
@@ -172,8 +157,6 @@ const ExtractModal = ({ open, onClose, onComplete }) => {
         }),
       });
 
-      console.log("🟢 status:", response.status);
-
       if (!response.ok) {
         const text = await response.text();
         if (response.status === 401 || response.status === 403) {
@@ -185,7 +168,7 @@ const ExtractModal = ({ open, onClose, onComplete }) => {
       await response.text();
       setPhase("sent");
     } catch (err) {
-      console.error("🔴 erro:", err);
+      console.error("Erro:", err);
       setErrorMsg(err.message);
       setPhase("error");
     }
@@ -197,6 +180,17 @@ const ExtractModal = ({ open, onClose, onComplete }) => {
   const usageNearLimit = usagePct >= 80;
   const usageColor = usagePct >= 95 ? "var(--bad)" : usagePct >= 80 ? "var(--warn, #f59e0b)" : "var(--accent)";
   const remaining = usage ? Math.max(0, usage.limit - usage.used) : 0;
+
+  const handleViewLeads = () => {
+    try {
+      localStorage.setItem("extracting_at", String(Date.now()));
+      localStorage.setItem("extracting_count", String(extractLeadCount(prompt)));
+    } catch (e) {
+      console.warn("localStorage erro:", e);
+    }
+    if (onComplete) onComplete();
+    onClose();
+  };
 
   return (
     <div style={{
@@ -216,7 +210,6 @@ const ExtractModal = ({ open, onClose, onComplete }) => {
         overflow: "hidden",
         animation: "slide-up 0.25s ease-out",
       }}>
-        {/* Header */}
         <div style={{
           padding: "14px 20px",
           borderBottom: "1px solid var(--line)",
@@ -242,7 +235,6 @@ const ExtractModal = ({ open, onClose, onComplete }) => {
           }}><Icon name="x" size={13}/></button>
         </div>
 
-        {/* Barra de uso (sempre visível quando idle) */}
         {usage && phase === "idle" && (
           <div style={{
             padding: "12px 20px",
@@ -286,7 +278,6 @@ const ExtractModal = ({ open, onClose, onComplete }) => {
           </div>
         )}
 
-        {/* Estado: BLOQUEADO */}
         {phase === "blocked" && usage && (
           <div style={{ padding: "30px 22px", textAlign: "center" }}>
             <div style={{
@@ -343,19 +334,19 @@ const ExtractModal = ({ open, onClose, onComplete }) => {
                 {usage.plan === "free" && (
                   <>
                     <span style={{ fontSize: 16, fontWeight: 600 }}>Starter</span>
-                    <span className="mono tabular" style={{ fontSize: 12, color: "var(--fg-2)" }}>250 leads · €29/mês</span>
+                    <span className="mono tabular" style={{ fontSize: 12, color: "var(--fg-2)" }}>250 leads · R$ 167/mês</span>
                   </>
                 )}
                 {usage.plan === "starter" && (
                   <>
                     <span style={{ fontSize: 16, fontWeight: 600 }}>Growth</span>
-                    <span className="mono tabular" style={{ fontSize: 12, color: "var(--fg-2)" }}>600 leads · €59/mês</span>
+                    <span className="mono tabular" style={{ fontSize: 12, color: "var(--fg-2)" }}>600 leads · R$ 347/mês</span>
                   </>
                 )}
                 {usage.plan === "growth" && (
                   <>
                     <span style={{ fontSize: 16, fontWeight: 600 }}>Scale</span>
-                    <span className="mono tabular" style={{ fontSize: 12, color: "var(--fg-2)" }}>1500 leads · €129/mês</span>
+                    <span className="mono tabular" style={{ fontSize: 12, color: "var(--fg-2)" }}>1500 leads · R$ 897/mês</span>
                   </>
                 )}
                 {usage.plan === "scale" && (
@@ -377,7 +368,6 @@ const ExtractModal = ({ open, onClose, onComplete }) => {
           </div>
         )}
 
-        {/* Prompt input */}
         {phase !== "blocked" && (
           <div style={{ padding: "20px" }}>
             <div style={{
@@ -405,7 +395,6 @@ const ExtractModal = ({ open, onClose, onComplete }) => {
               />
             </div>
 
-            {/* Hint sobre como funciona */}
             {phase === "idle" && prompt && (
               <div style={{ marginTop: 8, fontSize: 10.5, color: "var(--fg-2)" }}>
                 <span className="mono">{extractLeadCount(prompt)}</span> leads detectados no pedido
@@ -462,7 +451,7 @@ const ExtractModal = ({ open, onClose, onComplete }) => {
                 <div>
                   <div style={{ fontSize: 13, fontWeight: 500 }}>Buscando no Google Maps......</div>
                   <div className="mono" style={{ fontSize: 11, color: "var(--fg-2)", marginTop: 2 }}>
-                    POST {N8N_WEBHOOK_URL.substring(0, 50)}...
+                    A enviar pedido pra IA...
                   </div>
                 </div>
               </div>
@@ -481,7 +470,7 @@ const ExtractModal = ({ open, onClose, onComplete }) => {
                 </div>
                 <div style={{ fontSize: 12, color: "var(--fg-1)", lineHeight: 1.5 }}>
                   Pedido recebido! A nossa IA está a processar. <br/>
-  Aguarda ~60-90 segundos. Os leads vão aparecer na tabela.
+                  Aguarda ~60-90 segundos. Os leads vão aparecer na tabela.
                 </div>
               </div>
             )}
@@ -505,7 +494,6 @@ const ExtractModal = ({ open, onClose, onComplete }) => {
           </div>
         )}
 
-        {/* Footer */}
         {phase !== "blocked" && (
           <div style={{
             padding: "12px 20px",
@@ -531,19 +519,12 @@ const ExtractModal = ({ open, onClose, onComplete }) => {
             {phase === "sent" && (
               <>
                 <div style={{ flex: 1 }}/>
-                <Btn variant="primary" size="md" onClick={() => {
-                  // Salva timestamp da extração pra mostrar mensagem na tela de leads
-                  try {
-                    localStorage.setItem("extracting_at", String(Date.now()));
-                    localStorage.setItem("extracting_count", String(extractLeadCount(prompt)));
-                  } catch (e) { /* ignora se localStorage falhar */ }
-                  onComplete && onComplete();
-                  onClose();
-                }}>
+                <Btn variant="primary" size="md" onClick={handleViewLeads}>
                   Ver leads
                 </Btn>
               </>
             )}
+            {phase === "error" && (
               <>
                 <div style={{ flex: 1 }}/>
                 <Btn variant="outline" size="md" onClick={() => setPhase("idle")}>Tentar novamente</Btn>
