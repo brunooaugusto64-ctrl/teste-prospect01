@@ -54,26 +54,6 @@ const Sidebar = ({ current, onNav, onLogout }) => {
   const planColor = PLAN_COLORS_SHELL[planKey] || "var(--info)";
   const planLimit = PLAN_LIMITS_SHELL[planKey] || 50;
 
-  React.useEffect(() => {
-    (async () => {
-      const { data: { user } } = await window.supabase.auth.getUser();
-      setUser(user);
-      if (user) {
-        const { data: sub } = await window.supabase
-          .from("subscriptions")
-          .select("plan, status")
-          .eq("user_id", user.id)
-          .maybeSingle();
-        setSubscription(sub || { plan: "free", status: "active" });
-      }
-    })();
-  }, []);
-
-  const planKey = subscription?.plan || "free";
-  const planLabel = PLAN_LABELS_SHELL[planKey] || "Trial";
-  const planColor = PLAN_COLORS_SHELL[planKey] || "var(--info)";
-  const planLimit = PLAN_LIMITS_SHELL[planKey] || 50;
-
   const initials = user?.email
     ? user.email.substring(0, 2).toUpperCase()
     : "··";
