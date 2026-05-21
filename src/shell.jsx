@@ -1,7 +1,5 @@
 // App Shell — sidebar + topbar
 
-// App Shell — sidebar + topbar
-
 const PLAN_LIMITS_SHELL = {
   free: 50,
   starter: 250,
@@ -24,10 +22,37 @@ const PLAN_COLORS_SHELL = {
 };
 
 const NAV_ITEMS = [
+  { id: "overview", label: "Overview", icon: "grid" },
+  { id: "leads", label: "Leads", icon: "users" },
+  { id: "extract", label: "Extrair leads", icon: "search", accent: true },
+  { id: "marketplace", label: "Templates", icon: "package" },
+  { id: "billing", label: "Faturação", icon: "card" },
+  { id: "settings", label: "Definições", icon: "settings" },
+];
 
 const Sidebar = ({ current, onNav, onLogout }) => {
   const [user, setUser] = React.useState(null);
   const [subscription, setSubscription] = React.useState(null);
+
+  React.useEffect(() => {
+    (async () => {
+      const { data: { user } } = await window.supabase.auth.getUser();
+      setUser(user);
+      if (user) {
+        const { data: sub } = await window.supabase
+          .from("subscriptions")
+          .select("plan, status")
+          .eq("user_id", user.id)
+          .maybeSingle();
+        setSubscription(sub || { plan: "free", status: "active" });
+      }
+    })();
+  }, []);
+
+  const planKey = subscription?.plan || "free";
+  const planLabel = PLAN_LABELS_SHELL[planKey] || "Trial";
+  const planColor = PLAN_COLORS_SHELL[planKey] || "var(--info)";
+  const planLimit = PLAN_LIMITS_SHELL[planKey] || 50;
 
   React.useEffect(() => {
     (async () => {
