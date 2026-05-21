@@ -554,8 +554,8 @@ const OverviewScreen = ({ onOpenExtract }) => {
   const [user, setUser] = React.useState(null);
   const [leads, setLeads] = React.useState([]);
   const [extractions, setExtractions] = React.useState([]);
+  const [subscription, setSubscription] = React.useState(null);
   const [loading, setLoading] = React.useState(true);
-
   const reload = async () => {
     setLoading(true);
     const l = await window.fetchLeads();
