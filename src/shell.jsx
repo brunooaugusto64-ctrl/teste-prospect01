@@ -27,12 +27,27 @@ const NAV_ITEMS = [
 
 const Sidebar = ({ current, onNav, onLogout }) => {
   const [user, setUser] = React.useState(null);
+  const [subscription, setSubscription] = React.useState(null);
 
   React.useEffect(() => {
-    window.supabase.auth.getUser().then(({ data: { user } }) => {
+    (async () => {
+      const { data: { user } } = await window.supabase.auth.getUser();
       setUser(user);
-    });
+      if (user) {
+        const { data: sub } = await window.supabase
+          .from("subscriptions")
+          .select("plan, status")
+          .eq("user_id", user.id)
+          .maybeSingle();
+        setSubscription(sub || { plan: "free", status: "active" });
+      }
+    })();
   }, []);
+
+  const planKey = subscription?.plan || "free";
+  const planLabel = PLAN_LABELS_SHELL[planKey] || "Trial";
+  const planColor = PLAN_COLORS_SHELL[planKey] || "var(--info)";
+  const planLimit = PLAN_LIMITS_SHELL[planKey] || 50;
 
   const initials = user?.email
     ? user.email.substring(0, 2).toUpperCase()
