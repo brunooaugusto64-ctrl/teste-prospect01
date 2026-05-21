@@ -531,12 +531,19 @@ const ExtractModal = ({ open, onClose, onComplete }) => {
             {phase === "sent" && (
               <>
                 <div style={{ flex: 1 }}/>
-                <Btn variant="primary" size="md" onClick={() => { onComplete && onComplete(); onClose(); }}>
+                <Btn variant="primary" size="md" onClick={() => {
+                  // Salva timestamp da extração pra mostrar mensagem na tela de leads
+                  try {
+                    localStorage.setItem("extracting_at", String(Date.now()));
+                    localStorage.setItem("extracting_count", String(extractLeadCount(prompt)));
+                  } catch (e) { /* ignora se localStorage falhar */ }
+                  onComplete && onComplete();
+                  onClose();
+                }}>
                   Ver leads
                 </Btn>
               </>
             )}
-            {phase === "error" && (
               <>
                 <div style={{ flex: 1 }}/>
                 <Btn variant="outline" size="md" onClick={() => setPhase("idle")}>Tentar novamente</Btn>
