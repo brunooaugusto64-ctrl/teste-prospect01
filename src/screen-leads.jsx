@@ -257,7 +257,93 @@ const LeadsEmptyState = ({ onOpenExtract }) => (
     </div>
   </div>
 );
+// =====================================================
+// MENSAGEM DE EXTRAÇÃO EM CURSO
+// =====================================================
+const ExtractionStatus = () => {
+  const [status, setStatus] = React.useState(null); // { startedAt, count }
+  const [secondsLeft, setSecondsLeft] = React.useState(0);
 
+  // Lê do localStorage e atualiza a cada segundo
+  React.useEffect(() => {
+    const check = () => {
+      try {
+        const startedAt = parseInt(localStorage.getItem("extracting_at"), 10);
+        const count = parseInt(localStorage.getItem("extracting_count"), 10) || 10;
+        
+        if (!startedAt) {
+          setStatus(null);
+          return;
+        }
+        
+        // Estima 90 segundos por extração
+        const elapsed = Math.floor((Date.now() - startedAt) / 1000);
+        const remaining = Math.max(0, 90 - elapsed);
+        
+        if (remaining === 0) {
+          // Limpa localStorage após terminar
+          localStorage.removeItem("extracting_at");
+          localStorage.removeItem("extracting_count");
+          setStatus(null);
+          setSecondsLeft(0);
+        } else {
+          setStatus({ startedAt, count });
+          setSecondsLeft(remaining);
+        }
+      } catch (e) {
+        setStatus(null);
+      }
+    };
+    
+    check();
+    const interval = setInterval(check, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  if (!status) return null;
+
+  return (
+    <div style={{
+      padding: "10px 24px",
+      borderBottom: "1px solid var(--line)",
+      background: "var(--bg-1)",
+      display: "flex",
+      alignItems: "center",
+      gap: 10,
+      fontSize: 12,
+      color: "var(--fg-1)",
+    }}>
+      {/* Spinner */}
+      <div style={{
+        width: 12, height: 12, borderRadius: "50%",
+        border: "1.5px solid var(--line-2)", borderTopColor: "var(--accent)",
+        animation: "spin 0.8s linear infinite",
+        flexShrink: 0,
+      }}/>
+      
+      <span style={{ flex: 1 }}>
+        A processar a tua extração de <strong style={{ color: "var(--accent)" }}>{status.count} leads</strong>... os leads chegam em <strong style={{ color: "var(--fg-0)" }}>~{secondsLeft}s</strong>
+      </span>
+
+      {/* Botão fechar */}
+      <button
+        onClick={() => {
+          localStorage.removeItem("extracting_at");
+          localStorage.removeItem("extracting_count");
+          window.location.reload();
+        }}
+        style={{
+          width: 22, height: 22, display: "grid", placeItems: "center",
+          background: "transparent", border: "1px solid var(--line-2)", borderRadius: 4,
+          color: "var(--fg-2)", cursor: "pointer",
+        }}
+        title="Dispensar"
+      >
+        <Icon name="x" size={10}/>
+      </button>
+    </div>
+  );
+};
 
 const LeadsScreen = ({ onOpenLead, onOpenExtract }) => {
   const [leads, setLeads] = React.useState([]);
