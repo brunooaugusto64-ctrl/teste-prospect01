@@ -567,9 +567,21 @@ const OverviewScreen = ({ onOpenExtract }) => {
     setLoading(false);
   };
 
-  React.useEffect(() => {
-    window.supabase.auth.getUser().then(({ data: { user } }) => setUser(user));
-    reload();
+React.useEffect(() => {
+    (async () => {
+      const { data: { user } } = await window.supabase.auth.getUser();
+      setUser(user);
+      if (user) {
+        // Busca o plano do utilizador da tabela subscriptions
+        const { data: sub } = await window.supabase
+          .from("subscriptions")
+          .select("plan, status")
+          .eq("user_id", user.id)
+          .maybeSingle();
+        setSubscription(sub || { plan: "free", status: "active" });
+      }
+      reload();
+    })();
   }, []);
 
   // Calcula métricas
