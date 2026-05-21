@@ -159,9 +159,9 @@ const BillingScreen = () => {
     { ...window.PLANS.growth, id: "growth" },
     { ...window.PLANS.scale, id: "scale" },
   ] : [
-    { id: "starter", name: "Starter", price: 29, description: "Para freelancers que querem parar de procurar cliente.", features: ["250 leads/mês", "Exportação CSV", "Suporte WhatsApp", "Cancela a qualquer momento"] },
-    { id: "growth", name: "Growth", price: 59, description: "Para agências e times pequenos.", features: ["600 leads/mês", "5 logins de equipa", "Integração CRM básica", "Suporte prioritário"] },
-    { id: "scale", name: "Scale", price: 129, description: "Para operações de escala.", features: ["1500 leads/mês", "Logins ilimitados", "Acesso à API", "Integração avançada", "Suporte dedicado"] },
+    { id: "starter", name: "Starter", price: 167, description: "Para freelancers que querem parar de procurar cliente.", features: ["250 leads/mês", "Exportação CSV", "Suporte WhatsApp", "Cancela a qualquer momento"] },
+    { id: "growth", name: "Growth", price: 347, description: "Para agências e times pequenos.", features: ["600 leads/mês", "5 logins de equipa", "Integração CRM básica", "Suporte prioritário"] },
+    { id: "scale", name: "Scale", price: 897, description: "Para operações de escala.", features: ["1500 leads/mês", "Logins ilimitados", "Acesso à API", "Integração avançada", "Suporte dedicado"] },
   ];
 
   if (loading) {
