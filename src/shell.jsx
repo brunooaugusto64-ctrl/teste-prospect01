@@ -1,13 +1,29 @@
 // App Shell — sidebar + topbar
 
+// App Shell — sidebar + topbar
+
+const PLAN_LIMITS_SHELL = {
+  free: 50,
+  starter: 250,
+  growth: 600,
+  scale: 1500,
+};
+
+const PLAN_LABELS_SHELL = {
+  free: "Trial",
+  starter: "Starter",
+  growth: "Growth",
+  scale: "Scale",
+};
+
+const PLAN_COLORS_SHELL = {
+  free: "var(--info)",
+  starter: "var(--accent)",
+  growth: "var(--good)",
+  scale: "var(--accent)",
+};
+
 const NAV_ITEMS = [
-  { id: "overview", label: "Overview", icon: "grid" },
-  { id: "leads", label: "Leads", icon: "users" },
-  { id: "extract", label: "Extrair leads", icon: "search", accent: true },
-  { id: "marketplace", label: "Templates", icon: "package" },
-  { id: "billing", label: "Faturação", icon: "card" },
-  { id: "settings", label: "Definições", icon: "settings" },
-];
 
 const Sidebar = ({ current, onNav, onLogout }) => {
   const [user, setUser] = React.useState(null);
