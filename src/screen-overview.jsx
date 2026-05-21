@@ -594,7 +594,9 @@ React.useEffect(() => {
   const monthLeads = leads.filter(l => l.created_at && new Date(l.created_at) >= thirtyDaysAgo).length;
 
   // Plano atual (todos como Free por enquanto, até integrar Stripe)
-  const currentPlan = PLAN_LIMITS.free;
+  // Plano atual (busca dinamicamente da subscription)
+  const planKey = subscription?.plan || "free";
+  const currentPlan = PLAN_LIMITS[planKey] || PLAN_LIMITS.free;
   const usagePct = (monthLeads / currentPlan.limit) * 100;
   const usageColor = usagePct >= 90 ? "var(--bad)" : usagePct >= 70 ? "var(--warning, #f59e0b)" : "var(--accent)";
 
