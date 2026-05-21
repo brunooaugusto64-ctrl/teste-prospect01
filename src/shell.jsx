@@ -134,7 +134,7 @@ const Sidebar = ({ current, onNav, onLogout }) => {
         })}
       </nav>
 
-      {/* Plano (placeholder simples — dados reais virão na Fase 5 com Stripe) */}
+      {/* Plano — dinâmico baseado em subscription */}
       <div style={{
         padding: 12,
         borderTop: "1px solid var(--line)",
@@ -142,10 +142,13 @@ const Sidebar = ({ current, onNav, onLogout }) => {
       }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <span className="uppercase-label">Plano</span>
-          <Pill color="var(--info)">Trial</Pill>
+          <Pill color={planColor}>{planLabel}</Pill>
         </div>
         <div style={{ marginTop: 6, fontSize: 10.5, color: "var(--fg-2)", lineHeight: 1.4 }}>
-          Faz upgrade para desbloquear todos os recursos.
+          {planKey === "free"
+            ? "Faz upgrade para desbloquear todos os recursos."
+            : `${planLimit} leads/mês · cancela quando quiseres.`
+          }
         </div>
       </div>
 
