@@ -430,10 +430,12 @@ const LeadsScreen = ({ onOpenLead, onOpenExtract }) => {
     return <LeadsEmptyState onOpenExtract={onOpenExtract}/>;
   }
 
-  return (
+ return (
     <div style={{ display: "flex", flexDirection: "column", height: "calc(100vh - 78px)" }}>
+      <ExtractionStatus />
       <style>{`
-        @keyframes row-fade-in {
+        @keyframes row-fade-in {`
+      
           from { opacity: 0; transform: translateY(4px); }
           to { opacity: 1; transform: translateY(0); }
         }
