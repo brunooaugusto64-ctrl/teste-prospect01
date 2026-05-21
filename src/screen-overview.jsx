@@ -7,8 +7,8 @@
 const PLAN_LIMITS = {
   free: { name: "Free", limit: 50, color: "var(--fg-2)" },
   starter: { name: "Starter", limit: 250, color: "var(--info)" },
-  growth: { name: "Growth", limit: 550, color: "var(--accent)" },
-  scale: { name: "Scale", limit: 1000, color: "var(--good)" },
+  growth: { name: "Growth", limit: 600, color: "var(--accent)" },
+  scale: { name: "Scale", limit: 1500, color: "var(--good)" },
 };
 
 // ===================================================================
