@@ -21,30 +21,23 @@ const DEFAULT_LEADS_PER_PROMPT = 10;
 
 const extractLeadCount = (prompt) => {
   if (!prompt) return DEFAULT_LEADS_PER_PROMPT;
-
   const numMatch = prompt.match(/\b(\d{1,4})\b/);
   if (numMatch) {
     const n = parseInt(numMatch[1], 10);
     if (n > 0 && n <= 1500) return n;
   }
-
   const wordsToNum = {
-    "um": 1, "uma": 1, "dois": 2, "duas": 2, "três": 3, "tres": 3,
+    "um": 1, "uma": 1, "dois": 2, "duas": 2, "tres": 3,
     "quatro": 4, "cinco": 5, "seis": 6, "sete": 7, "oito": 8, "nove": 9,
-    "dez": 10, "onze": 11, "doze": 12, "treze": 13, "catorze": 14, "quatorze": 14,
-    "quinze": 15, "dezesseis": 16, "dezassete": 17, "dezoito": 18, "dezenove": 19,
-    "vinte": 20, "trinta": 30, "quarenta": 40, "cinquenta": 50,
+    "dez": 10, "vinte": 20, "trinta": 30, "quarenta": 40, "cinquenta": 50,
     "sessenta": 60, "setenta": 70, "oitenta": 80, "noventa": 90,
-    "cem": 100, "cento": 100, "duzentos": 200, "trezentos": 300,
-    "quinhentos": 500, "mil": 1000,
+    "cem": 100, "duzentos": 200, "trezentos": 300, "quinhentos": 500, "mil": 1000,
   };
-
   const lowerPrompt = prompt.toLowerCase();
   for (const [word, num] of Object.entries(wordsToNum)) {
-    const regex = new RegExp(`\\b${word}\\b`, "i");
+    const regex = new RegExp("\\b" + word + "\\b", "i");
     if (regex.test(lowerPrompt)) return num;
   }
-
   return DEFAULT_LEADS_PER_PROMPT;
 };
 
@@ -56,7 +49,7 @@ const ExtractModal = ({ open, onClose, onComplete }) => {
   const inputRef = React.useRef(null);
 
   const SAMPLES = [
-    "10 clínicas de estética em Lisboa",
+    "10 clinicas de estetica em Lisboa",
     "20 restaurantes vegan no Porto",
     "15 academias em Cascais",
     "8 dentistas em Braga",
@@ -78,23 +71,19 @@ const ExtractModal = ({ open, onClose, onComplete }) => {
     try {
       const { data: { user } } = await window.supabase.auth.getUser();
       if (!user) return;
-
       const { data: sub } = await window.supabase
         .from("subscriptions")
         .select("plan")
         .eq("user_id", user.id)
         .maybeSingle();
-
       const plan = sub?.plan || "free";
       const limit = PLAN_LIMITS_EXTRACT[plan] || 50;
-
       const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
       const { count } = await window.supabase
         .from("leads")
         .select("*", { count: "exact", head: true })
         .eq("user_id", user.id)
         .gte("created_at", thirtyDaysAgo);
-
       setUsage({ used: count || 0, limit, plan, requested: 0 });
     } catch (err) {
       console.error("Erro ao carregar uso:", err);
@@ -108,47 +97,38 @@ const ExtractModal = ({ open, onClose, onComplete }) => {
 
   const start = async () => {
     if (!prompt.trim()) return;
-
     setPhase("checking");
     setErrorMsg(null);
-
     try {
       const { data: { user } } = await window.supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada. Faz login novamente.");
-
+      if (!user) throw new Error("Sessao expirada. Faz login novamente.");
       const { data: sub } = await window.supabase
         .from("subscriptions")
         .select("plan")
         .eq("user_id", user.id)
         .maybeSingle();
-
       const plan = sub?.plan || "free";
       const limit = PLAN_LIMITS_EXTRACT[plan] || 50;
-
       const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
       const { count } = await window.supabase
         .from("leads")
         .select("*", { count: "exact", head: true })
         .eq("user_id", user.id)
         .gte("created_at", thirtyDaysAgo);
-
       const used = count || 0;
       const requested = extractLeadCount(prompt);
       const wouldBe = used + requested;
-
       if (wouldBe > limit) {
         setUsage({ used, limit, plan, requested });
         setPhase("blocked");
         return;
       }
-
       setPhase("sending");
-
       const response = await fetch(N8N_WEBHOOK_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${N8N_WEBHOOK_TOKEN}`,
+          "Authorization": "Bearer " + N8N_WEBHOOK_TOKEN,
         },
         body: JSON.stringify({
           chatInput: prompt,
@@ -156,15 +136,13 @@ const ExtractModal = ({ open, onClose, onComplete }) => {
           user_email: user.email,
         }),
       });
-
       if (!response.ok) {
         const text = await response.text();
         if (response.status === 401 || response.status === 403) {
-          throw new Error("Autenticação falhou no webhook n8n.");
+          throw new Error("Autenticacao falhou no webhook n8n.");
         }
-        throw new Error(`n8n erro ${response.status}: ${text}`);
+        throw new Error("n8n erro " + response.status + ": " + text);
       }
-
       await response.text();
       setPhase("sent");
     } catch (err) {
@@ -173,13 +151,6 @@ const ExtractModal = ({ open, onClose, onComplete }) => {
       setPhase("error");
     }
   };
-
-  if (!open) return null;
-
-  const usagePct = usage ? Math.min((usage.used / usage.limit) * 100, 100) : 0;
-  const usageNearLimit = usagePct >= 80;
-  const usageColor = usagePct >= 95 ? "var(--bad)" : usagePct >= 80 ? "var(--warn, #f59e0b)" : "var(--accent)";
-  const remaining = usage ? Math.max(0, usage.limit - usage.used) : 0;
 
   const handleViewLeads = () => {
     try {
@@ -191,6 +162,13 @@ const ExtractModal = ({ open, onClose, onComplete }) => {
     if (onComplete) onComplete();
     onClose();
   };
+
+  if (!open) return null;
+
+  const usagePct = usage ? Math.min((usage.used / usage.limit) * 100, 100) : 0;
+  const usageNearLimit = usagePct >= 80;
+  const usageColor = usagePct >= 95 ? "var(--bad)" : usagePct >= 80 ? "var(--warn, #f59e0b)" : "var(--accent)";
+  const remaining = usage ? Math.max(0, usage.limit - usage.used) : 0;
 
   return (
     <div style={{
@@ -243,7 +221,7 @@ const ExtractModal = ({ open, onClose, onComplete }) => {
           }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 6 }}>
               <span className="uppercase-label" style={{ fontSize: 9.5 }}>
-                Plano {PLAN_LABELS[usage.plan]} · uso 30 dias
+                Plano {PLAN_LABELS[usage.plan]} - uso 30 dias
               </span>
               <span className="mono tabular" style={{ fontSize: 11, fontWeight: 500, color: "var(--fg-0)" }}>
                 {usage.used} / {usage.limit}
@@ -254,24 +232,23 @@ const ExtractModal = ({ open, onClose, onComplete }) => {
               borderRadius: 2, overflow: "hidden",
             }}>
               <div style={{
-                width: `${usagePct}%`,
+                width: usagePct + "%",
                 height: "100%",
                 background: usageColor,
                 borderRadius: 2,
                 transition: "width 0.6s ease-out",
-                boxShadow: usageNearLimit ? `0 0 6px ${usageColor}` : "none",
               }}/>
             </div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 6 }}>
               <span style={{ fontSize: 10.5, color: "var(--fg-2)" }}>
-                Restam <strong style={{ color: usageNearLimit ? usageColor : "var(--fg-0)" }}>{remaining}</strong> leads disponíveis
+                Restam <strong style={{ color: usageNearLimit ? usageColor : "var(--fg-0)" }}>{remaining}</strong> leads disponiveis
               </span>
               {usageNearLimit && (
                 <span style={{
                   fontSize: 10.5,
                   color: usagePct >= 95 ? "var(--bad)" : "var(--warn, #f59e0b)",
                 }}>
-                  {usagePct >= 95 ? "⚠ Quase no limite" : `${Math.round(usagePct)}% usado`}
+                  {usagePct >= 95 ? "Quase no limite" : Math.round(usagePct) + "% usado"}
                 </span>
               )}
             </div>
@@ -294,7 +271,6 @@ const ExtractModal = ({ open, onClose, onComplete }) => {
             <div style={{
               fontSize: 17, fontWeight: 600,
               fontFamily: "var(--font-display)",
-              letterSpacing: "-0.015em",
               marginBottom: 8,
             }}>
               {usage.used >= usage.limit ? "Limite do plano atingido" : "Pedido excede o limite"}
@@ -304,59 +280,8 @@ const ExtractModal = ({ open, onClose, onComplete }) => {
               maxWidth: 440, margin: "0 auto 18px",
               lineHeight: 1.5,
             }}>
-              {usage.used >= usage.limit ? (
-                <>
-                  Já usaste <strong style={{ color: "var(--fg-0)" }}>{usage.used} de {usage.limit}</strong> leads
-                  do plano <strong style={{ color: "var(--fg-0)" }}>{PLAN_LABELS[usage.plan]}</strong> nos últimos 30 dias.
-                </>
-              ) : (
-                <>
-                  Tu pediste <strong style={{ color: "var(--fg-0)" }}>{usage.requested}</strong> leads,
-                  mas só restam <strong style={{ color: "var(--fg-0)" }}>{Math.max(0, usage.limit - usage.used)}</strong> no
-                  teu plano <strong style={{ color: "var(--fg-0)" }}>{PLAN_LABELS[usage.plan]}</strong>.
-                </>
-              )}
-              <br/>Faz upgrade para continuar a gerar leads.
+              Faz upgrade para continuar a gerar leads.
             </div>
-
-            <div style={{
-              padding: 14,
-              background: "var(--bg-1)",
-              border: "1px solid color-mix(in oklab, var(--accent) 30%, var(--line-2))",
-              borderRadius: 8,
-              maxWidth: 380, margin: "0 auto 16px",
-              textAlign: "left",
-            }}>
-              <div className="uppercase-label" style={{ fontSize: 9.5, color: "var(--accent)" }}>
-                Recomendado
-              </div>
-              <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginTop: 4 }}>
-                {usage.plan === "free" && (
-                  <>
-                    <span style={{ fontSize: 16, fontWeight: 600 }}>Starter</span>
-                    <span className="mono tabular" style={{ fontSize: 12, color: "var(--fg-2)" }}>250 leads · R$ 167/mês</span>
-                  </>
-                )}
-                {usage.plan === "starter" && (
-                  <>
-                    <span style={{ fontSize: 16, fontWeight: 600 }}>Growth</span>
-                    <span className="mono tabular" style={{ fontSize: 12, color: "var(--fg-2)" }}>600 leads · R$ 347/mês</span>
-                  </>
-                )}
-                {usage.plan === "growth" && (
-                  <>
-                    <span style={{ fontSize: 16, fontWeight: 600 }}>Scale</span>
-                    <span className="mono tabular" style={{ fontSize: 12, color: "var(--fg-2)" }}>1500 leads · R$ 897/mês</span>
-                  </>
-                )}
-                {usage.plan === "scale" && (
-                  <span style={{ fontSize: 13, color: "var(--fg-2)" }}>
-                    Já estás no plano máximo. Contacta-nos para limites maiores.
-                  </span>
-                )}
-              </div>
-            </div>
-
             <div style={{ display: "flex", gap: 8, justifyContent: "center" }}>
               <Btn variant="ghost" size="md" onClick={onClose}>Fechar</Btn>
               {usage.plan !== "scale" && (
@@ -376,7 +301,6 @@ const ExtractModal = ({ open, onClose, onComplete }) => {
               background: "var(--bg-1)",
               border: "1px solid " + (phase === "idle" ? "var(--line-2)" : "var(--accent)"),
               borderRadius: 6,
-              transition: "border-color 0.2s",
             }}>
               <span className="mono" style={{ color: "var(--accent)", fontSize: 14 }}>$</span>
               <input
@@ -390,7 +314,6 @@ const ExtractModal = ({ open, onClose, onComplete }) => {
                 style={{
                   flex: 1, background: "transparent", border: "none", outline: "none",
                   fontSize: 14, color: "var(--fg-0)",
-                  opacity: phase === "idle" ? 1 : 0.7,
                 }}
               />
             </div>
@@ -398,15 +321,12 @@ const ExtractModal = ({ open, onClose, onComplete }) => {
             {phase === "idle" && prompt && (
               <div style={{ marginTop: 8, fontSize: 10.5, color: "var(--fg-2)" }}>
                 <span className="mono">{extractLeadCount(prompt)}</span> leads detectados no pedido
-                {usage && (
-                  <span> · ficarás com {usage.used + extractLeadCount(prompt)}/{usage.limit}</span>
-                )}
               </div>
             )}
 
             {phase === "idle" && (
               <div style={{ marginTop: 14, display: "flex", gap: 6, flexWrap: "wrap" }}>
-                <span className="uppercase-label" style={{ marginRight: 4, alignSelf: "center" }}>Sugestões</span>
+                <span className="uppercase-label" style={{ marginRight: 4, alignSelf: "center" }}>Sugestoes</span>
                 {SAMPLES.map(s => (
                   <button key={s} onClick={() => setPrompt(s)} style={{
                     padding: "5px 10px",
@@ -449,7 +369,7 @@ const ExtractModal = ({ open, onClose, onComplete }) => {
                   animation: "spin 0.8s linear infinite",
                 }}/>
                 <div>
-                  <div style={{ fontSize: 13, fontWeight: 500 }}>Buscando no Google Maps......</div>
+                  <div style={{ fontSize: 13, fontWeight: 500 }}>Buscando no Google Maps...</div>
                   <div className="mono" style={{ fontSize: 11, color: "var(--fg-2)", marginTop: 2 }}>
                     A enviar pedido pra IA...
                   </div>
@@ -469,8 +389,7 @@ const ExtractModal = ({ open, onClose, onComplete }) => {
                   <span style={{ fontSize: 13, fontWeight: 500, color: "var(--good)" }}>Pedido enviado!</span>
                 </div>
                 <div style={{ fontSize: 12, color: "var(--fg-1)", lineHeight: 1.5 }}>
-                  Pedido recebido! A nossa IA está a processar. <br/>
-                  Aguarda ~60-90 segundos. Os leads vão aparecer na tabela.
+                  Pedido recebido! A nossa IA esta a processar. Aguarda 60-90 segundos. Os leads vao aparecer na tabela.
                 </div>
               </div>
             )}
@@ -487,7 +406,7 @@ const ExtractModal = ({ open, onClose, onComplete }) => {
                   <span style={{ fontSize: 13, fontWeight: 500, color: "var(--bad)" }}>Erro ao enviar</span>
                 </div>
                 <div style={{ fontSize: 11.5, color: "var(--fg-1)", marginBottom: 10 }}>
-                  {errorMsg || "Não foi possível contactar o n8n."}
+                  {errorMsg || "Nao foi possivel contactar o n8n."}
                 </div>
               </div>
             )}
@@ -502,7 +421,7 @@ const ExtractModal = ({ open, onClose, onComplete }) => {
             display: "flex", alignItems: "center", gap: 12,
           }}>
             {phase === "idle" && (
-              <>
+              <React.Fragment>
                 <span className="mono" style={{ fontSize: 11, color: "var(--fg-2)" }}>
                   Enter para enviar
                 </span>
@@ -511,25 +430,25 @@ const ExtractModal = ({ open, onClose, onComplete }) => {
                 <Btn variant="primary" size="md" onClick={start} iconRight="arrow-right" disabled={!prompt.trim()}>
                   Enviar pedido
                 </Btn>
-              </>
+              </React.Fragment>
             )}
             {(phase === "checking" || phase === "sending") && (
               <span className="mono" style={{ fontSize: 11, color: "var(--fg-2)" }}>A processar...</span>
             )}
             {phase === "sent" && (
-              <>
+              <React.Fragment>
                 <div style={{ flex: 1 }}/>
                 <Btn variant="primary" size="md" onClick={handleViewLeads}>
                   Ver leads
                 </Btn>
-              </>
+              </React.Fragment>
             )}
             {phase === "error" && (
-              <>
+              <React.Fragment>
                 <div style={{ flex: 1 }}/>
                 <Btn variant="outline" size="md" onClick={() => setPhase("idle")}>Tentar novamente</Btn>
                 <Btn variant="ghost" size="md" onClick={onClose}>Fechar</Btn>
-              </>
+              </React.Fragment>
             )}
           </div>
         )}
