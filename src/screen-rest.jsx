@@ -4,9 +4,9 @@
 // CONFIGURAÇÃO STRIPE — links de pagamento
 // =====================================================
 const STRIPE_LINKS = {
-  starter: "https://buy.stripe.com/9B65kDggk0kwh0fg0w53O00",
-  growth: "https://buy.stripe.com/cNi14n0hm8R24dt3dK53O01",
-  scale: "https://buy.stripe.com/fZu00j5BGffq9xN6pW53O02",
+  starter: "https://buy.stripe.com/cNi00j1lq8R27pF8y453O03",
+  growth: "https://buy.stripe.com/28EeVd0hmebm11hdSo53O04",
+  scale: "https://buy.stripe.com/6oUbJ1aW09V6aBRdSo53O05",
 };
 
 // Limites por plano (devem bater com plans.js)
